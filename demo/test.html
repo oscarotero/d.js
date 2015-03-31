@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test</title>
+		<link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.17.1.css">
+	</head>
+	<body>
+		<div id="qunit"></div>
+		<div id="qunit-fixture">
+			<ul class="list">
+				<li>One</li>
+				<li>Two</li>
+				<li>Three</li>
+			</ul>
+		</div>
+
+		<script src="//code.jquery.com/qunit/qunit-1.17.1.js"></script>
+		<script type="text/javascript" src="../d.js"></script>
+
+		<script type="text/javascript">
+			QUnit.test(".get", function (assert) {
+				assert.strictEqual(d.get('.list > li'), document.querySelector('.list > li'), "Passed!");
+				assert.strictEqual(d.get('ol.list > li'), null, "Passed!");
+			});
+
+			QUnit.test(".getAll", function (assert) {
+				assert.strictEqual(d.getAll('.list > li').length, 3, "Passed!");
+				assert.strictEqual(d.getAll('ol.list > li').length, 0, "Passed!");
+			});
+
+			QUnit.test(".is", function (assert) {
+				var element = d.get('.list > li');
+
+				assert.strictEqual(d.is(element, 'li'), true, "Passed!");
+				assert.strictEqual(d.is(element, 'p'), false, "Passed!");
+			});
+
+			QUnit.test(".remove", function (assert) {
+				assert.strictEqual(d.getAll('.list > li').length, 3, "Passed!");
+
+				d.remove(d.get('.list > li'));
+
+				assert.strictEqual(d.getAll('.list > li').length, 2, "Passed!");
+			});
+
+			QUnit.test(".css", function (assert) {
+				var element = d.get('.list > li');
+
+				assert.strictEqual(d.css(element, 'margin-left'), '0px', "Passed!");
+
+				d.css(element, 'margin-left', '10px');
+
+				assert.strictEqual(d.css(element, 'margin-left'), '10px', "Passed!");
+			});
+
+			QUnit.test(".parse", function (assert) {
+				var elements = d.parse('<ol><li></li></ol>');
+
+				assert.strictEqual(elements.length, 1, "Passed!");
+				assert.strictEqual(d.is(elements[0], 'ol'), true, "Passed!");
+			});
+		</script>
+	</body>
+</html>

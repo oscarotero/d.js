@@ -4,6 +4,11 @@ Micro dom manipulation library (< 1Kb). Because jQuery is not needed always.
 
 A lot of this code is taken from http://youmightnotneedjquery.com/
 
+## Browser Support
+
+* IE>=10
+* The rest of modern browsers
+
 ## Usage
 
 ```js
@@ -36,4 +41,29 @@ d.css(element, 'color', 'blue');
 
 //Parse a html code
 var elements = d.parse('<p>Hello world</p>');
+```
+
+## Example
+
+```js
+var values = d
+
+	//select all inputs
+	.getAll('input[type="text"]')
+
+	//filter by class
+	.filter(function (input) {
+		input.classList.contains('hello');
+	})
+
+	//execute some function
+	.forEach(function (input) {
+		d.css(input, 'color', 'red');
+	})
+
+	//returns the values
+	.map(function (input) {
+		return input.value;
+	});
+
 ```

@@ -40,7 +40,7 @@
     },
 
     css: function (element, ruleName, value) {
-      if (vale !== undefined) {
+      if (value !== undefined) {
         element.style[ruleName] = value;
       } else {
         var style = getComputedStyle(element);
@@ -51,7 +51,7 @@
 
     parse: function (html) {
       var tmp = document.implementation.createHTMLDocument();
-      tmp.body.innerHTML = str;
+      tmp.body.innerHTML = html;
 
       return Array.prototype.slice.call(tmp.body.children);
     }
