@@ -14,5 +14,9 @@
   "keywords": [
     "dom"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "demo"
+  ]
 }
