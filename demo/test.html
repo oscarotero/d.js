@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta charset="utf-8">
 		<title>Test</title>
 		<link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.17.1.css">
 	</head>
@@ -54,10 +55,10 @@
 			});
 
 			QUnit.test(".parse", function (assert) {
-				var elements = d.parse('<ol><li></li></ol>');
+				var element = d.parse('<ol><li></li></ol>');
 
-				assert.strictEqual(elements.length, 1, "Passed!");
-				assert.strictEqual(d.is(elements[0], 'ol'), true, "Passed!");
+				assert.strictEqual(d.is(element, 'ol'), true, "Passed!");
+				assert.strictEqual(element.children.length, 1, "Passed!");
 			});
 		</script>
 	</body>

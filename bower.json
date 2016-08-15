@@ -1,16 +1,12 @@
 {
   "name": "d.js",
   "main": "d.js",
-  "version": "0.1",
   "homepage": "https://github.com/oscarotero/d.js",
   "authors": [
     "oscarotero <oom@oscarotero.com>"
   ],
   "description": "Micro DOM manipulation library",
-  "moduleType": [
-    "amd",
-    "globals"
-  ],
+  "main": "d.js",
   "keywords": [
     "dom"
   ],

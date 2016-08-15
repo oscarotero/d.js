@@ -1,69 +1,162 @@
-# d
+# d.js
 
-Micro dom manipulation library (< 1Kb). Because jQuery is not needed always.
+Micro dom manipulation library. Because jQuery is not needed always.
 
 A lot of this code is taken from http://youmightnotneedjquery.com/
 
-## Browser Support
+* Compatible with modern browsers and IE >= 10
+* Installable with bower `bower install d.js`
+* Compatible with AMD, commonJS and global javascript
+* Only 2Kb (minified)
+* HTML & SVG support
 
-* IE>=10
-* The rest of modern browsers
-
-## Usage
+## Usage example:
 
 ```js
-//returns one element:
-var element = d.get('.foo');
+//Get an array with all .buttons elements
+var buttons = d.getAll('.buttons');
 
-//returns all elements as an array
-var elements = d.getAll('.foo');
+//Change css properties
+d.css(buttons, {
+	fontFamily: 'Arial',
+	color: 'red',
+	transition: 'all 2s'
+});
 
-//Check if an element matches with a selector
-d.is(element, '.foo');
-
-//Remove the element
-d.remove(element);
-
-//Get the element position
-d.position(element);
-
-//Get the position relative to viewport
-d.position(element, true);
-
-//Get a css property
-d.css(element, 'color');
-
-//Get all css properties
-var styles = d.css(element);
-
-//Set a css property
-d.css(element, 'color', 'blue');
-
-//Parse a html code
-var elements = d.parse('<p>Hello world</p>');
+//Handle events
+d.on('click', buttons, function () {
+	alert('clicked');
+});
 ```
 
-## Example
+## API
+
+### get()
+
+Returns the first element found:
+
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **context** An optional context (by default is `document`)
 
 ```js
-var values = d
+var container = d.get('.container');
+var buttonInContainer = d.get('.button', container);
+```
 
-	//select all inputs
-	.getAll('input[type="text"]')
+### getAll()
 
-	//filter by class
-	.filter(function (input) {
-		input.classList.contains('hello');
-	})
+Returns an array with all elements found:
 
-	//execute some function
-	.forEach(function (input) {
-		d.css(input, 'color', 'red');
-	})
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **context** An optional context (by default is `document`)
 
-	//returns the values
-	.map(function (input) {
-		return input.value;
-	});
+```js
+d.get('.button').forEach(function (el) {
+	el.classList.add('selected');
+});
+```
 
+### is()
+
+Returns if the element matches with the selector:
+
+* **element** The element
+* **query** A string with the selector
+
+```js
+d.is(document.body, 'h1'); //false
+d.is(document.body, 'body'); //true
+```
+
+### on()
+
+Attach an event to the elements
+
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **event** A string with the event name or an instance of `Event`
+* **callback** The event callback
+* **useCapture** (optional)
+
+```js
+function clickAction(e) {
+	alert('Event ' + e.type);
+}
+
+d.on('click', '.button', clickAction);
+```
+
+### off()
+
+Removes an event from the elements
+
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **event** A string with the event name or an instance of `Event`
+* **callback** The event callback
+* **useCapture** (optional)
+
+```js
+d.off('click', '.button', clickAction);
+```
+
+### trigger()
+
+Trigger an event of the elements
+
+* **event** A string with the event name or an instance of `Event`
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+
+```js
+d.trigger('click', '.button');
+```
+
+### remove()
+
+Removes the elements from the DOM
+
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+
+```js
+d.remove('.button');
+```
+
+### css()
+
+Set/get the css properties of the first element. The vendor prefixes are handled automatically.
+
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **prop** A string with the property name or an object with property/values
+* **value** The new value of the property
+
+```js
+//Get the value
+var color = d.css('.button', 'color');
+
+//Set a new value
+d.css('.button', 'color', 'blue');
+
+//Set several values
+d.css('.button', {
+	color: 'red',
+	backgroundColor: 'blue',
+	transform: 'rotate(5deg)' //don't care about vendor prefixes
+});
+```
+
+### parse()
+
+Parses html code. Returns an element or an array of elements
+
+* **html** A string with the code to parse
+
+```js
+//parse one element
+var button = d.parse('<button>Hello</button>');
+button.classList.add('active');
+
+//parse a list of elements
+var buttons = d.parse('<button>Hello</button><button>World</button>');
+
+buttons.forEach(function (el) {
+	el.classList.add('active');
+});
 ```
