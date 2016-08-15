@@ -14,47 +14,47 @@
 
     // Helpers functions
 
-    function selectAll(elements, context) {
-        if (Array.isArray(elements)) {
-            return elements;
+    function selectAll(query, context) {
+        if (Array.isArray(query)) {
+            return query;
         }
 
-        if (typeof elements === 'string') {
-            elements = (context || document).querySelectorAll(elements);
+        if (typeof query === 'string') {
+            query = (context || document).querySelectorAll(query);
         }
 
-        if (elements instanceof NodeList || elements instanceof HTMLCollection) {
-            return Array.prototype.slice.call(elements);
+        if (query instanceof NodeList || query instanceof HTMLCollection) {
+            return Array.prototype.slice.call(query);
         }
 
-        return [elements];
+        return [query];
     }
 
-    function selectOne(elements, context) {
-        if (typeof elements === 'string') {
-            return (context || document).querySelector(elements);
+    function selectOne(query, context) {
+        if (typeof query === 'string') {
+            return (context || document).querySelector(query);
         }
 
-        if (Array.isArray(elements) || elements instanceof NodeList || elements instanceof HTMLCollection) {
-            return elements[0];
+        if (Array.isArray(query) || query instanceof NodeList || query instanceof HTMLCollection) {
+            return query[0];
         }
 
-        return elements;
+        return query;
     }
 
-    function handleEvents (element, event, callback, useCapture, fnName) {
-        element = selectAll(element);
+    function handleEvents (event, query, callback, useCapture, fnName) {
+        var elements = selectAll(query);
         useCapture = useCapture || false;
 
         if (event instanceof Event) {
             event = event.type;
         }
 
-        element.forEach(function (element) {
+        elements.forEach(function (element) {
             element[fnName](event, callback, useCapture);
         });
 
-        return element;
+        return elements;
     }
 
     var support = {}, div;
@@ -119,22 +119,22 @@
         /*
          * Attach an event to the elements.
          */
-        on: function (element, event, callback, useCapture) {
-            return handleEvents(element, event, callback, useCapture, 'addEventListener');
+        on: function (event, query, callback, useCapture) {
+            return handleEvents(event, query, callback, useCapture, 'addEventListener');
         },
 
         /*
          * Detach an event from the elements.
          */
-        off: function (element, event, callback, useCapture) {
-            return handleEvents(element, event, callback, useCapture, 'removeEventListener');
+        off: function (event, query, callback, useCapture) {
+            return handleEvents(event, query, callback, useCapture, 'removeEventListener');
         },
 
         /*
          * Dispatch an event.
          */
-        trigger: function (element, event) {
-            element = selectAll(element);
+        trigger: function (event, query) {
+            var elements = selectAll(query);
 
             if (typeof event === 'string') {
                 if (window.Event) {
@@ -145,18 +145,18 @@
                 }
             }
 
-            element.forEach(function (element) {
+            elements.forEach(function (element) {
                 element.dispatchEvent(event);
             });
 
-            return element;
+            return elements;
         },
 
         /*
          * Remove elements
          */
-        remove: function (element) {
-            selectAll(element).forEach(function (element) {
+        remove: function (query) {
+            selectAll(query).forEach(function (element) {
                 element.parentNode.removeChild(element);
             });
         },
@@ -164,9 +164,9 @@
         /*
          * Get/set the styles of elements
          */
-        css: function (element, prop, value) {
+        css: function (query, prop, value) {
             if (value === undefined && (typeof prop !== 'object')) {
-                var style = getComputedStyle(selectOne(element));
+                var style = getComputedStyle(selectOne(query));
 
                 if (prop === undefined) {
                     return style;
@@ -183,15 +183,15 @@
                 rules[prop] = value;
             }
 
-            element = selectAll(element);
+            var elements = selectAll(query);
             
-            element.forEach(function (element, index, elements) {
+            elements.forEach(function (element, index, elements) {
                 for (var prop in rules) {
                     element.style[styleProp(prop)] = (typeof rules[prop] === 'function') ? rules[prop].call(this, element, index, elements) : rules[prop];
                 }
             });
 
-            return element;
+            return elements;
         },
 
         /*
