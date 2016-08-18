@@ -143,13 +143,25 @@
         },
         insertBefore: {
             value: function (element) {
-                d.insertBefore(this, element);
+                d.insertBefore(this.toArray(), element);
                 return this;
             }
         },
         insertAfter: {
             value: function (element) {
                 d.insertAfter(this.toArray(), element);
+                return this;
+            }
+        },
+        prepend: {
+            value: function (element) {
+                d.prepend(this.toArray(), element);
+                return this;
+            }
+        },
+        append: {
+            value: function (element) {
+                d.append(this.toArray(), element);
                 return this;
             }
         },
@@ -231,10 +243,10 @@
     /*
      * Insert a new element before other
      */
-    d.insertBefore = function (newNode, query) {
+    d.insertBefore = function (newNodes, query) {
         var element = selectOne(query);
 
-        selectAll(newNode).forEach(function (newElement) {
+        selectAll(newNodes).forEach(function (newElement) {
             element.parentNode.insertBefore(newElement, element);
         });
     };
@@ -242,11 +254,33 @@
     /*
      * Insert a new element after other
      */
-    d.insertAfter = function (newNode, query) {
+    d.insertAfter = function (newNodes, query) {
         var element = selectOne(query);
 
-        selectAll(newNode).reverse().forEach(function (newElement) {
+        selectAll(newNodes).reverse().forEach(function (newElement) {
             element.parentNode.insertBefore(newElement, element.nextSibling);
+        });
+    };
+
+    /*
+     * Insert a new element as the first child of other
+     */
+    d.prepend = function (newNodes, query) {
+        var element = selectOne(query);
+
+        selectAll(newNodes).reverse().forEach(function (newElement) {
+            element.insertBefore(newElement, element.firstChild);
+        });
+    };
+
+    /*
+     * Insert a new element as the last child of other
+     */
+    d.append = function (newNodes, query) {
+        var element = selectOne(query);
+
+        selectAll(newNodes).forEach(function (newElement) {
+            element.appendChild(newElement);
         });
     };
 

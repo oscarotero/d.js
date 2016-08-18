@@ -35,7 +35,7 @@ d.on('click', buttons, function () {
 
 Returns the first element found:
 
-* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **context** An optional context (by default is `document`)
 
 ```js
@@ -47,7 +47,7 @@ var buttonInContainer = d.get('.button', container);
 
 Returns an array with all elements found:
 
-* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **context** An optional context (by default is `document`)
 
 ```js
@@ -72,7 +72,7 @@ d.is(document.body, 'body'); //true
 
 Attach an event to the elements
 
-* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **event** A string with the event name or an instance of `Event`
 * **callback** The event callback
 * **useCapture** (optional)
@@ -89,7 +89,7 @@ d.on('click', '.button', clickAction);
 
 Removes an event from the elements
 
-* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **event** A string with the event name or an instance of `Event`
 * **callback** The event callback
 * **useCapture** (optional)
@@ -103,7 +103,7 @@ d.off('click', '.button', clickAction);
 Trigger an event of the elements
 
 * **event** A string with the event name or an instance of `Event`
-* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 
 ```js
 d.trigger('click', '.button');
@@ -113,10 +113,54 @@ d.trigger('click', '.button');
 
 Removes the elements from the DOM
 
-* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 
 ```js
 d.remove('.button');
+```
+
+### insertAfter()
+
+Insert new elements after other
+
+* **newNodes** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+
+```js
+d.insertAfter(newNode, 'li:last-child');
+```
+
+### insertBefore()
+
+Insert new elements before other
+
+* **newNodes** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+
+```js
+d.insertBefore(newNode, 'li:first-child');
+```
+
+### prepend()
+
+Insert new elements as first children of other element
+
+* **newNodes** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+
+```js
+d.prepend(newLiNode, 'ul');
+```
+
+### append()
+
+Insert new elements as last children of other element
+
+* **newNodes** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+
+```js
+d.append(newLiNode, 'ul');
 ```
 
 ### css()
@@ -159,4 +203,21 @@ var buttons = d.parse('<button>Hello</button><button>World</button>');
 buttons.forEach(function (el) {
 	el.classList.add('active');
 });
+```
+
+## Instance API
+
+`d.js` allows to create `d` instances so you can apply some of these methods in a object oriented way:
+
+```js
+d('.button') //returns a d instance
+	.css({
+		color: 'red',
+		fontFamily: 'Arial'
+	}).
+	.on('click', function (e) {
+		alert('Button clicked');
+	})
+	.append('.buttons');
+
 ```
