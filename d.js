@@ -112,17 +112,20 @@
     d.prototype = Object.create(Array.prototype, {
         on: {
             value: function (event, callback, useCapture) {
-                return d.on(event, this, callback, useCapture);
+                d.on(event, this, callback, useCapture);
+                return this;
             }
         },
         off: {
             value: function (event, callback, useCapture) {
-                return d.off(event, this, callback, useCapture);
+                d.off(event, this, callback, useCapture);
+                return this;
             }
         },
         trigger: {
             value: function (event) {
-                return d.trigger(event, this);
+                d.trigger(event, this);
+                return this;
             }
         },
         css: {
@@ -130,7 +133,29 @@
                 var args = Array.prototype.slice.call(arguments);
                 args.unshift(this);
 
-                return d.css.apply(null, args);
+                if (args.length < 3 && (typeof prop !== 'object')) {
+                    return d.css.apply(null, args);
+                }
+
+                d.css.apply(null, args);
+                return this;
+            }
+        },
+        insertBefore: {
+            value: function (element) {
+                d.insertBefore(this, element);
+                return this;
+            }
+        },
+        insertAfter: {
+            value: function (element) {
+                d.insertAfter(this.toArray(), element);
+                return this;
+            }
+        },
+        toArray: {
+            value: function () {
+                return Array.prototype.slice.call(this);
             }
         }
     });
@@ -164,14 +189,14 @@
      * Attach an event to the elements.
      */
     d.on = function (event, query, callback, useCapture) {
-        return handleEvents(event, query, callback, useCapture, 'addEventListener');
+        handleEvents(event, query, callback, useCapture, 'addEventListener');
     };
 
     /*
      * detach an event from the elements.
      */
     d.off = function (event, query, callback, useCapture) {
-        return handleEvents(event, query, callback, useCapture, 'removeEventListener');
+        handleEvents(event, query, callback, useCapture, 'removeEventListener');
     };
 
     /*
@@ -192,8 +217,6 @@
         elements.forEach(function (element) {
             element.dispatchEvent(event);
         });
-
-        return elements;
     };
 
     /*
@@ -202,6 +225,28 @@
     d.remove = function (query) {
         selectAll(query).forEach(function (element) {
             element.parentNode.removeChild(element);
+        });
+    };
+
+    /*
+     * Insert a new element before other
+     */
+    d.insertBefore = function (newNode, query) {
+        var element = selectOne(query);
+
+        selectAll(newNode).forEach(function (newElement) {
+            element.parentNode.insertBefore(newElement, element);
+        });
+    };
+
+    /*
+     * Insert a new element after other
+     */
+    d.insertAfter = function (newNode, query) {
+        var element = selectOne(query);
+
+        selectAll(newNode).reverse().forEach(function (newElement) {
+            element.parentNode.insertBefore(newElement, element.nextSibling);
         });
     };
 
@@ -227,15 +272,11 @@
             rules[prop] = value;
         }
 
-        var elements = selectAll(query);
-
-        elements.forEach(function (element, index, elements) {
+        selectAll(query).forEach(function (element, index, elements) {
             for (var prop in rules) {
                 element.style[styleProp(prop)] = (typeof rules[prop] === 'function') ? rules[prop].call(this, element, index, elements) : rules[prop];
             }
         });
-
-        return elements;
     };
 
     /*
