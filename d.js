@@ -98,16 +98,12 @@
     /*
      * Select the first element
      */
-    d.get = function (query, context) {
-        return selectOne(query, context);
-    };
+    d.get = selectOne;
 
     /*
      * Select an array of elements
      */
-    d.getAll = function (query, context) {
-        return selectAll(query, context);
-    };
+    d.getAll = selectAll;
 
     /*
      * Check whether the element matches with a selector
@@ -297,11 +293,10 @@
         return elements;
     }
 
-    var support = {}, div;
+    var support = {},
+        div = document.createElement('div');
 
     function styleProp (prop) {
-        div = div || document.createElement('div');
-
         //camelCase (ex: font-family => fontFamily)
         prop = prop.replace(/(-\w)/g, function (match) {
             return match[1].toUpperCase();
@@ -315,6 +310,7 @@
             return support[prop];
         }
 
+        //prefixed property
         var vendorProp,
         capProp = prop.charAt(0).toUpperCase() + prop.slice(1),
         prefixes = ['Moz', 'Webkit', 'O', 'ms'];
@@ -330,10 +326,8 @@
     }
 
     function createEvent (type, data) {
-        var eventProp = 'on' + type;
-
         //native event
-        if (eventProp in this) {
+        if (('on' + type) in div) {
             var event = document.createEvent('HTMLEvents');
             event.initEvent(type, true, false);
 
@@ -344,7 +338,7 @@
         if (window.CustomEvent) {
             return new CustomEvent(type, {detail: data || {}});
         }
-        
+
         var event = document.createEvent('CustomEvent');
         event.initCustomEvent(type, true, true, data || {});
         return event;
