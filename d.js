@@ -12,83 +12,6 @@
     }
 }(this, function () {
 
-    // Helpers functions
-
-    function selectAll(query, context) {
-        if (Array.isArray(query) || query instanceof d) {
-            return query;
-        }
-
-        if (typeof query === 'string') {
-            query = (context || document).querySelectorAll(query);
-        }
-
-        if (query instanceof NodeList || query instanceof HTMLCollection) {
-            return Array.prototype.slice.call(query);
-        }
-
-        return [query];
-    }
-
-    function selectOne(query, context) {
-        if (typeof query === 'string') {
-            return (context || document).querySelector(query);
-        }
-
-        if (Array.isArray(query) || query instanceof NodeList || query instanceof HTMLCollection || query instanceof d) {
-            return query[0];
-        }
-
-        return query;
-    }
-
-    function handleEvents (event, query, callback, useCapture, fnName) {
-        var elements = selectAll(query);
-        useCapture = useCapture || false;
-
-        if (event instanceof Event) {
-            event = event.type;
-        }
-
-        elements.forEach(function (element) {
-            element[fnName](event, callback, useCapture);
-        });
-
-        return elements;
-    }
-
-    var support = {}, div;
-
-    function styleProp (prop) {
-        div = div || document.createElement('div');
-
-        //camelCase (ex: font-family => fontFamily)
-        prop = prop.replace(/(-\w)/g, function (match) {
-            return match[1].toUpperCase();
-        });
-
-        if (prop in div.style) {
-            return prop;
-        }
-
-        if (prop in support) {
-            return support[prop];
-        }
-
-        var vendorProp,
-        capProp = prop.charAt(0).toUpperCase() + prop.slice(1),
-        prefixes = ['Moz', 'Webkit', 'O', 'ms'];
-
-        for (var i = 0; i < prefixes.length; i++) {
-            vendorProp = prefixes[i] + capProp;
-            
-            if (vendorProp in div.style) {
-                support[prop] = vendorProp;
-                return vendorProp;
-            }
-        }
-    }
-
     function d (query, context) {
         if (this instanceof d) {
             var elements;
@@ -123,8 +46,8 @@
             }
         },
         trigger: {
-            value: function (event) {
-                d.trigger(event, this);
+            value: function (event, data) {
+                d.trigger(event, this, data);
                 return this;
             }
         },
@@ -214,16 +137,11 @@
     /*
      * dispatch an event.
      */
-    d.trigger = function (event, query) {
+    d.trigger = function (event, query, data) {
         var elements = selectAll(query);
 
         if (typeof event === 'string') {
-            if (window.Event) {
-                event = new Event(event);
-            } else {
-                event = document.createEvent('Event');
-                event.initEvent(event, true, true);
-            }
+            event = createEvent(event, data);
         }
 
         elements.forEach(function (element) {
@@ -330,6 +248,107 @@
 
         return selectAll(tmp.body.children);
     };
+
+
+    /******************************
+     * Helpers functions
+     ******************************/
+
+    function selectAll(query, context) {
+        if (Array.isArray(query) || query instanceof d) {
+            return query;
+        }
+
+        if (typeof query === 'string') {
+            query = (context || document).querySelectorAll(query);
+        }
+
+        if (query instanceof NodeList || query instanceof HTMLCollection) {
+            return Array.prototype.slice.call(query);
+        }
+
+        return [query];
+    }
+
+    function selectOne(query, context) {
+        if (typeof query === 'string') {
+            return (context || document).querySelector(query);
+        }
+
+        if (Array.isArray(query) || query instanceof NodeList || query instanceof HTMLCollection || query instanceof d) {
+            return query[0];
+        }
+
+        return query;
+    }
+
+    function handleEvents (event, query, callback, useCapture, fnName) {
+        var elements = selectAll(query);
+        useCapture = useCapture || false;
+
+        if (event instanceof Event) {
+            event = event.type;
+        }
+
+        elements.forEach(function (element) {
+            element[fnName](event, callback, useCapture);
+        });
+
+        return elements;
+    }
+
+    var support = {}, div;
+
+    function styleProp (prop) {
+        div = div || document.createElement('div');
+
+        //camelCase (ex: font-family => fontFamily)
+        prop = prop.replace(/(-\w)/g, function (match) {
+            return match[1].toUpperCase();
+        });
+
+        if (prop in div.style) {
+            return prop;
+        }
+
+        if (prop in support) {
+            return support[prop];
+        }
+
+        var vendorProp,
+        capProp = prop.charAt(0).toUpperCase() + prop.slice(1),
+        prefixes = ['Moz', 'Webkit', 'O', 'ms'];
+
+        for (var i = 0; i < prefixes.length; i++) {
+            vendorProp = prefixes[i] + capProp;
+            
+            if (vendorProp in div.style) {
+                support[prop] = vendorProp;
+                return vendorProp;
+            }
+        }
+    }
+
+    function createEvent (type, data) {
+        var eventProp = 'on' + type;
+
+        //native event
+        if (eventProp in this) {
+            var event = document.createEvent('HTMLEvents');
+            event.initEvent(type, true, false);
+
+            return event;
+        }
+
+        //custom event
+        if (window.CustomEvent) {
+            return new CustomEvent(type, {detail: data || {}});
+        }
+        
+        var event = document.createEvent('CustomEvent');
+        event.initCustomEvent(type, true, true, data || {});
+        return event;
+    }
 
     return d;
 }));
