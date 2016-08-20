@@ -5,10 +5,12 @@
   "authors": [
     "oscarotero <oom@oscarotero.com>"
   ],
-  "description": "Micro DOM manipulation library",
+  "description": "DOM manipulation micro-library",
   "main": "d.js",
   "keywords": [
-    "dom"
+    "dom",
+    "events",
+    "css"
   ],
   "license": "MIT",
   "ignore": [

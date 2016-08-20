@@ -13,26 +13,53 @@
 }(this, function () {
 
     function d (query, context) {
+        //constructor
         if (this instanceof d) {
-            var elements;
-
-            if (typeof query === 'string' && query[0] === '<') {
-                elements = d.parse(query) || [];
-
-                if (!Array.isArray(elements)) {
-                    elements = [elements];
-                }
+            if (!Array.isArray(query)) {
+                this.push(query);
             } else {
-                elements = selectAll(query, context);
+                Array.prototype.splice.apply(this, [0, 0].concat(query));
             }
 
-            Array.prototype.splice.apply(this, [0, 0].concat(elements));
-        } else {
-            return new d(query, context);
+            return this;
         }
+
+        var elements;
+
+        if (typeof query === 'string' && query[0] === '<') {
+            return new d(d.parse(query) || []);
+        }
+
+        return new d(selectAll(query, context));
     };
 
     d.prototype = Object.create(Array.prototype, {
+        get: {
+            value: function (query) {
+                for (var i = 0; i < this.length; i++) {
+                    var found = selectOne(query, this[i]);
+
+                    if (found) {
+                        return new d([found]);
+                    }
+                }
+            }
+        },
+        getAll: {
+            value: function (query) {
+                var all = [];
+
+                this.forEach(function (el) {
+                    selectAll(query, el).forEach(function (found) {
+                        if (all.indexOf(found) === -1) {
+                            all.push(found);
+                        }
+                    });
+                });
+
+                return new d(all);
+            }
+        },
         on: {
             value: function (event, callback, useCapture) {
                 d.on(event, this, callback, useCapture);
