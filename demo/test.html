@@ -22,11 +22,13 @@
 			QUnit.test(".get", function (assert) {
 				assert.strictEqual(d.get('.list > li'), document.querySelector('.list > li'), "Passed!");
 				assert.strictEqual(d.get('ol.list > li'), null, "Passed!");
+				assert.strictEqual(d('.list').get('li')[0], document.querySelector('.list li'), "Passed!");
 			});
 
 			QUnit.test(".getAll", function (assert) {
 				assert.strictEqual(d.getAll('.list > li').length, 3, "Passed!");
 				assert.strictEqual(d.getAll('ol.list > li').length, 0, "Passed!");
+				assert.strictEqual(d('.list > li').length, 3, "Passed!");
 			});
 
 			QUnit.test(".is", function (assert) {
@@ -50,8 +52,12 @@
 				assert.strictEqual(d.css(element, 'margin-left'), '0px', "Passed!");
 
 				d.css(element, 'margin-left', '10px');
+				d.css(element, {
+					fontFamily: 'Arial'
+				});
 
 				assert.strictEqual(d.css(element, 'margin-left'), '10px', "Passed!");
+				assert.strictEqual(d.css(element, 'font-family'), 'Arial', "Passed!");
 			});
 
 			QUnit.test(".parse", function (assert) {
@@ -59,6 +65,38 @@
 
 				assert.strictEqual(d.is(element, 'ol'), true, "Passed!");
 				assert.strictEqual(element.children.length, 1, "Passed!");
+
+				element = d('<ol><li></li></ol>');
+				assert.strictEqual(d.is(element[0], 'ol'), true, "Passed!");
+				assert.strictEqual(element[0].children.length, 1, "Passed!");
+			});
+
+			QUnit.test("events", function (assert) {
+				var element = d('<div></div>');
+				var clicked = false;
+				var fn = function () {
+					clicked = true;
+				};
+
+				element.on('click', fn);
+
+				element.trigger('click');
+				assert.strictEqual(clicked, true, "Passed!");
+				clicked = false;
+
+				element.off('click', fn);
+				element.trigger('click');
+				assert.strictEqual(clicked, false, "Passed!");
+
+				element.on('customClick', fn);
+
+				element.trigger('customClick');
+				assert.strictEqual(clicked, true, "Passed!");
+				clicked = false;
+
+				element.off('customClick', fn);
+				element.trigger('customClick');
+				assert.strictEqual(clicked, false, "Passed!");
 			});
 		</script>
 	</body>

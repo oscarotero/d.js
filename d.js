@@ -40,7 +40,7 @@
                     var found = selectOne(query, this[i]);
 
                     if (found) {
-                        return new d([found]);
+                        return new d(found);
                     }
                 }
             }
