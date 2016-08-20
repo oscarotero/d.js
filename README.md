@@ -7,7 +7,7 @@ A lot of this code is taken from http://youmightnotneedjquery.com/
 * Compatible with modern browsers and IE >= 10
 * Installable with bower `bower install d.js`
 * Compatible with AMD, commonJS and global javascript
-* Only 3Kb (minified)
+* Only 4Kb (minified)
 * HTML & SVG support
 
 ## Usage example:
