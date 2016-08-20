@@ -31,7 +31,7 @@ d.on('click', buttons, function () {
 
 ## API
 
-### get()
+### d.get(query, context)
 
 Returns the first element found:
 
@@ -43,7 +43,7 @@ var container = d.get('.container');
 var buttonInContainer = d.get('.button', container);
 ```
 
-### getAll()
+### d.getAll(query, context)
 
 Returns an array with all elements found:
 
@@ -56,7 +56,7 @@ d.get('.button').forEach(function (el) {
 });
 ```
 
-### is()
+### d.is(element, query)
 
 Returns if the element matches with the selector:
 
@@ -68,12 +68,12 @@ d.is(document.body, 'h1'); //false
 d.is(document.body, 'body'); //true
 ```
 
-### on()
+### d.on(event, query, callback, useCapture)
 
 Attach an event to the elements
 
-* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **event** A string with the event name or an instance of `Event`
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **callback** The event callback
 * **useCapture** (optional)
 
@@ -85,12 +85,12 @@ function clickAction(e) {
 d.on('click', '.button', clickAction);
 ```
 
-### off()
+### d.off(event, query, callback, useCapture)
 
 Removes an event from the elements
 
-* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **event** A string with the event name or an instance of `Event`
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **callback** The event callback
 * **useCapture** (optional)
 
@@ -98,7 +98,7 @@ Removes an event from the elements
 d.off('click', '.button', clickAction);
 ```
 
-### trigger()
+### d.trigger(event, query)
 
 Trigger an event of the elements
 
@@ -109,7 +109,7 @@ Trigger an event of the elements
 d.trigger('click', '.button');
 ```
 
-### remove()
+### d.remove(query)
 
 Removes the elements from the DOM
 
@@ -119,48 +119,52 @@ Removes the elements from the DOM
 d.remove('.button');
 ```
 
-### insertAfter()
+### insertAfter(query, content)
 
 Insert new elements after other
 
-* **newNodes** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **content** A string with the selector or html content, array of elements or a Node/NodeList/HTMLCollection instance
 
 ```js
-d.insertAfter(newNode, 'li:last-child');
+d.insertAfter('li:last-child', newNodes);
+d.insertAfter('li:last-child', '<li>new content</li>');
 ```
 
-### insertBefore()
+### insertBefore(query, content)
 
 Insert new elements before other
 
-* **newNodes** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **content** A string with the selector or html content, array of elements or a Node/NodeList/HTMLCollection instance
 
 ```js
-d.insertBefore(newNode, 'li:first-child');
+d.insertBefore('li:first-child', newNodes);
+d.insertBefore('li:first-child', '<li>new content</li>');
 ```
 
-### prepend()
+### prepend(query, content)
 
 Insert new elements as first children of other element
 
-* **newNodes** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **content** A string with the selector or html content, array of elements or a Node/NodeList/HTMLCollection instance
 
 ```js
-d.prepend(newLiNode, 'ul');
+d.prepend('ul', newLiNode);
+d.prepend('ul', '<li>new content</li>');
 ```
 
-### append()
+### append(query, content)
 
 Insert new elements as last children of other element
 
-* **newNodes** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
 * **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
+* **content** A string with the selector or html content, array of elements or a Node/NodeList/HTMLCollection instance
 
 ```js
-d.append(newLiNode, 'ul');
+d.append('ul', newLiNode);
+d.append('ul', '<li>new content</li>');
 ```
 
 ### css()
@@ -207,7 +211,7 @@ buttons.forEach(function (el) {
 
 ## Instance API
 
-`d.js` allows to create `d` instances so you can apply some of these methods in a object oriented way:
+`d.js` allows to create `d` instances so you can apply some of these methods in a object oriented way. Example:
 
 ```js
 d('.button') //returns a d instance
@@ -220,4 +224,32 @@ d('.button') //returns a d instance
 	})
 	.append('.buttons');
 
+//You can create new elements on the fly:
+d('<button>Click me</button>')
+	.css({
+		color: 'red',
+		fontFamily: 'Arial'
+	})
+	.on('click', function () {
+		alert('Hi!');
+	})
+	.appendTo('.buttons');
 ```
+
+Method | Description
+------ | -----------
+`.get(query)` | Returns a new instance with one child. For example: `d('form').get('.submit')`
+`.getAll(query)` | Returns a new instance with all children. For example: `d('form').getAll('input')`
+`.on(event, callback, useCapture)` | Attach an event.
+`.off(event, callback, useCapture)` | Removes an event.
+`.trigger(event, data)` | Trigger an event
+`.css(props|prop, value)` | Get/set css properties
+`.insertBefore(content|query)` | Insert new elements before the element
+`.insertAfter(content|query)` | Insert new elements after the element
+`.prepend(content|query)` | Insert new elements as first children
+`.append(content|query)` | Insert new elements as last children
+`.insertBeforeTo(query)` | Insert the element before other element
+`.insertAfterTo(query)` | Insert the element after other element
+`.prependTo(query)` | Insert the element as first child of other element
+`.appendTo(query)` | Insert the element as last child of other element
+`.toArray()` | Returns an array with all elements

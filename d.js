@@ -24,13 +24,7 @@
             return this;
         }
 
-        var elements;
-
-        if (typeof query === 'string' && query[0] === '<') {
-            return new d(d.parse(query) || []);
-        }
-
-        return new d(selectAll(query, context));
+        return new d(selectOrParse(query, context));
     };
 
     d.prototype = Object.create(Array.prototype, {
@@ -92,26 +86,50 @@
             }
         },
         insertBefore: {
-            value: function (element) {
-                d.insertBefore(this.toArray(), element);
+            value: function (content) {
+                d.insertBefore(this, content);
                 return this;
             }
         },
         insertAfter: {
-            value: function (element) {
-                d.insertAfter(this.toArray(), element);
+            value: function (content) {
+                d.insertAfter(this, content);
                 return this;
             }
         },
         prepend: {
-            value: function (element) {
-                d.prepend(this.toArray(), element);
+            value: function (content) {
+                d.prepend(this, content);
                 return this;
             }
         },
         append: {
-            value: function (element) {
-                d.append(this.toArray(), element);
+            value: function (content) {
+                d.append(this, content);
+                return this;
+            }
+        },
+        insertBeforeTo: {
+            value: function (query) {
+                d.insertBefore(query, this);
+                return this;
+            }
+        },
+        insertAfterTo: {
+            value: function (query) {
+                d.insertAfter(query, this);
+                return this;
+            }
+        },
+        prependTo: {
+            value: function (query) {
+                d.prepend(query, this);
+                return this;
+            }
+        },
+        appendTo: {
+            value: function (query) {
+                d.append(query, this);
                 return this;
             }
         },
@@ -161,14 +179,12 @@
      * dispatch an event.
      */
     d.trigger = function (event, query, data) {
-        var elements = selectAll(query);
-
         if (typeof event === 'string') {
             event = createEvent(event, data);
         }
 
-        elements.forEach(function (element) {
-            element.dispatchEvent(event);
+        selectAll(query).forEach(function (el) {
+            el.dispatchEvent(event);
         });
     };
 
@@ -176,52 +192,52 @@
      * Remove elements
      */
     d.remove = function (query) {
-        selectAll(query).forEach(function (element) {
-            element.parentNode.removeChild(element);
+        selectAll(query).forEach(function (el) {
+            el.parentNode.removeChild(el);
         });
     };
 
     /*
      * Insert a new element before other
      */
-    d.insertBefore = function (newNodes, query) {
+    d.insertBefore = function (query, content) {
         var element = selectOne(query);
 
-        selectAll(newNodes).forEach(function (newElement) {
-            element.parentNode.insertBefore(newElement, element);
+        selectOrParse(content).forEach(function (el) {
+            element.parentNode.insertBefore(el, element);
         });
     };
 
     /*
      * Insert a new element after other
      */
-    d.insertAfter = function (newNodes, query) {
+    d.insertAfter = function (query, content) {
         var element = selectOne(query);
 
-        selectAll(newNodes).reverse().forEach(function (newElement) {
-            element.parentNode.insertBefore(newElement, element.nextSibling);
+        selectOrParse(content).reverse().forEach(function (el) {
+            element.parentNode.insertBefore(el, element.nextSibling);
         });
     };
 
     /*
      * Insert a new element as the first child of other
      */
-    d.prepend = function (newNodes, query) {
+    d.prepend = function (query, content) {
         var element = selectOne(query);
 
-        selectAll(newNodes).reverse().forEach(function (newElement) {
-            element.insertBefore(newElement, element.firstChild);
+        selectOrParse(content).reverse().forEach(function (el) {
+            element.insertBefore(el, element.firstChild);
         });
     };
 
     /*
      * Insert a new element as the last child of other
      */
-    d.append = function (newNodes, query) {
+    d.append = function (query, content) {
         var element = selectOne(query);
 
-        selectAll(newNodes).forEach(function (newElement) {
-            element.appendChild(newElement);
+        selectOrParse(content).forEach(function (el) {
+            element.appendChild(el);
         });
     };
 
@@ -258,24 +274,37 @@
      * Parses a html code
      */
     d.parse = function (html) {
-        var tmp = document.implementation.createHTMLDocument();
-        tmp.body.innerHTML = html;
-
-        if (tmp.body.children.length === 0) {
-            return null;
-        }
-
-        if (tmp.body.children.length === 1) {
-            return tmp.body.children[0];
-        }
-
-        return selectAll(tmp.body.children);
+        return parse(html, false);
     };
 
 
     /******************************
      * Helpers functions
      ******************************/
+
+     var support = {}, div = document.createElement('div');
+
+    function parse(html, forceArray) {
+        div.innerHTML = html;
+
+        if (div.children.length === 0) {
+            return forceArray ? [] : null;
+        }
+
+        if (div.children.length === 1 && !forceArray) {
+            return div.children[0];
+        }
+
+        return selectAll(div.children);
+    }
+
+    function selectOrParse(query, context) {
+        if (typeof query === 'string' && query[0] === '<') {
+            return parse(query, true) || [];
+        }
+
+        return selectAll(query, context);
+    }
 
     function selectAll(query, context) {
         if (Array.isArray(query) || query instanceof d) {
@@ -319,9 +348,6 @@
 
         return elements;
     }
-
-    var support = {},
-        div = document.createElement('div');
 
     function styleProp (prop) {
         //camelCase (ex: font-family => fontFamily)

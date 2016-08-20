@@ -98,6 +98,54 @@
 				element.trigger('customClick');
 				assert.strictEqual(clicked, false, "Passed!");
 			});
+
+			QUnit.test(".append", function (assert) {
+				var element = d.parse('<div></div>');
+
+				assert.strictEqual(0, element.children.length);
+
+				d.append(element, '<p>one</p>');
+				d.append(element, '<p>two</p>');
+				d.append(element, '<p>three</p>');
+
+				assert.strictEqual(3, element.children.length);
+				assert.strictEqual('one', element.children[0].innerText);
+			});
+
+			QUnit.test(".prepend", function (assert) {
+				var element = d.parse('<div></div>');
+
+				assert.strictEqual(0, element.children.length);
+
+				d.prepend(element, '<p>three</p>');
+				d.prepend(element, '<p>two</p>');
+				d.prepend(element, '<p>one</p>');
+
+				assert.strictEqual(3, element.children.length);
+				assert.strictEqual('one', element.children[0].innerText);
+			});
+
+			QUnit.test(".insertBefore", function (assert) {
+				var element = d.parse('<div><p>two</p></div>');
+
+				assert.strictEqual(1, element.children.length);
+
+				d.insertBefore(element.children[0], '<p>one</p>');
+
+				assert.strictEqual(2, element.children.length);
+				assert.strictEqual('one', element.children[0].innerText);
+			});
+
+			QUnit.test(".insertAfter", function (assert) {
+				var element = d.parse('<div><p>two</p></div>');
+
+				assert.strictEqual(1, element.children.length);
+
+				d.insertAfter(element.children[0], '<p>three</p>');
+
+				assert.strictEqual(2, element.children.length);
+				assert.strictEqual('three', element.children[1].innerText);
+			});
 		</script>
 	</body>
 </html>
