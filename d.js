@@ -265,7 +265,15 @@
 
         selectAll(query).forEach(function (element, index, elements) {
             for (var prop in rules) {
-                element.style[styleProp(prop)] = (typeof rules[prop] === 'function') ? rules[prop].call(this, element, index, elements) : rules[prop];
+                var val = rules[prop];
+
+                if (typeof val === 'function') {
+                    element.style[styleProp(prop)] = val.call(this, element, index, elements);
+                } else if (val instanceof Array) {
+                    element.style[styleProp(prop)] = val[index < val.length ? index : index % val.length];
+                } else {
+                    element.style[styleProp(prop)] = val;
+                }
             }
         });
     };
