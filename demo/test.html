@@ -39,6 +39,9 @@
 			});
 
 			QUnit.test(".remove", function (assert) {
+				//empty result
+				d.remove('.not-found');
+				
 				assert.strictEqual(d.getAll('.list > li').length, 3, "Passed!");
 
 				d.remove(d.get('.list > li'));
@@ -47,17 +50,31 @@
 			});
 
 			QUnit.test(".css", function (assert) {
-				var element = d.get('.list > li');
+				//empty result
+				d.css('.not-found', 'margin', 'auto');
 
-				assert.strictEqual(d.css(element, 'margin-left'), '0px', "Passed!");
+				var elements = d.getAll('.list > li');
 
-				d.css(element, 'margin-left', '10px');
-				d.css(element, {
-					fontFamily: 'Arial'
+				assert.strictEqual(d.css(elements[0], 'margin-left'), '0px', "Passed!");
+
+				d.css(elements, 'margin-left', '10px');
+				d.css(elements, {
+					fontFamily: 'Arial',
+					color: ['red', 'blue'],
+					fontSize: function (el, index) {
+						return (10 + index) + 'px';
+					}
 				});
 
-				assert.strictEqual(d.css(element, 'margin-left'), '10px', "Passed!");
-				assert.strictEqual(d.css(element, 'font-family'), 'Arial', "Passed!");
+				assert.strictEqual(d.css(elements[0], 'margin-left'), '10px', "Passed!");
+				assert.strictEqual(d.css(elements[0], 'font-family'), 'Arial', "Passed!");
+				assert.strictEqual(d.css(elements[1], 'font-family'), 'Arial', "Passed!");
+				assert.strictEqual(d.css(elements[0], 'color'), 'rgb(255, 0, 0)', "Passed!");
+				assert.strictEqual(d.css(elements[1], 'color'), 'rgb(0, 0, 255)', "Passed!");
+				assert.strictEqual(d.css(elements[2], 'color'), 'rgb(255, 0, 0)', "Passed!");
+				assert.strictEqual(d.css(elements[0], 'fontSize'), '10px', "Passed!");
+				assert.strictEqual(d.css(elements[1], 'fontSize'), '11px', "Passed!");
+				assert.strictEqual(d.css(elements[2], 'fontSize'), '12px', "Passed!");
 			});
 
 			QUnit.test(".parse", function (assert) {
@@ -77,6 +94,8 @@
 				var fn = function () {
 					clicked = true;
 				};
+
+				d.on('click', '.not-found', fn);
 
 				element.on('click', fn);
 
@@ -100,6 +119,8 @@
 			});
 
 			QUnit.test(".append", function (assert) {
+				d.append('.not-found', '<p>zero</p>');
+
 				var element = d.parse('<div></div>');
 
 				assert.strictEqual(0, element.children.length);
@@ -113,6 +134,8 @@
 			});
 
 			QUnit.test(".prepend", function (assert) {
+				d.prepend('.not-found', '<p>zero</p>');
+
 				var element = d.parse('<div></div>');
 
 				assert.strictEqual(0, element.children.length);
@@ -126,6 +149,8 @@
 			});
 
 			QUnit.test(".insertBefore", function (assert) {
+				d.insertBefore('.not-found', '<p>zero</p>');
+
 				var element = d.parse('<div><p>two</p></div>');
 
 				assert.strictEqual(1, element.children.length);
@@ -137,6 +162,8 @@
 			});
 
 			QUnit.test(".insertAfter", function (assert) {
+				d.insertAfter('.not-found', '<p>zero</p>');
+
 				var element = d.parse('<div><p>two</p></div>');
 
 				assert.strictEqual(1, element.children.length);

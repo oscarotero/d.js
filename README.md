@@ -185,8 +185,11 @@ d.css('.button', 'color', 'blue');
 //Set several values
 d.css('.button', {
 	color: 'red',
-	backgroundColor: 'blue',
+	backgroundColor: ['blue', 'red', 'green'], //set different values for each element
 	transform: 'rotate(5deg)' //don't care about vendor prefixes
+	width: function (el, index) { //use a function to calculate the value for each element
+		return (100 + (100*index)) + 'px';
+	}
 });
 ```
 
@@ -195,6 +198,7 @@ d.css('.button', {
 Parses html code. Returns an element or an array of elements
 
 * **html** A string with the code to parse
+* **forceArray** To return an array of elements even if just one element has been parsed
 
 ```js
 //parse one element

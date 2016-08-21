@@ -11,8 +11,9 @@
         root.d = factory();
     }
 }(this, function () {
+    var support = {}, div = document.createElement('div');
 
-    function d (query, context) {
+    function d (query) {
         //constructor
         if (this instanceof d) {
             if (!Array.isArray(query)) {
@@ -24,14 +25,14 @@
             return this;
         }
 
-        return new d(selectOrParse(query, context));
+        return new d(selectOrParse(query));
     };
 
     d.prototype = Object.create(Array.prototype, {
         get: {
             value: function (query) {
                 for (var i = 0; i < this.length; i++) {
-                    var found = selectOne(query, this[i]);
+                    var found = d.get(query, this[i]);
 
                     if (found) {
                         return new d(found);
@@ -44,7 +45,7 @@
                 var all = [];
 
                 this.forEach(function (el) {
-                    selectAll(query, el).forEach(function (found) {
+                    d.getAll(query, el).forEach(function (found) {
                         if (all.indexOf(found) === -1) {
                             all.push(found);
                         }
@@ -143,12 +144,36 @@
     /*
      * Select the first element
      */
-    d.get = selectOne;
+    d.get = function (query, context) {
+        if (typeof query === 'string') {
+            return (context || document).querySelector(query);
+        }
+
+        if (Array.isArray(query) || query instanceof NodeList || query instanceof HTMLCollection || query instanceof d) {
+            return query[0];
+        }
+
+        return query;
+    };
 
     /*
      * Select an array of elements
      */
-    d.getAll = selectAll;
+    d.getAll = function (query, context) {
+        if (Array.isArray(query)) {
+            return query;
+        }
+
+        if (typeof query === 'string') {
+            query = (context || document).querySelectorAll(query);
+        }
+
+        if (query instanceof NodeList || query instanceof HTMLCollection || query instanceof d) {
+            return Array.prototype.slice.call(query);
+        }
+
+        return [query];
+    };
 
     /*
      * Check whether the element matches with a selector
@@ -165,14 +190,18 @@
      * Attach an event to the elements.
      */
     d.on = function (event, query, callback, useCapture) {
-        handleEvents(event, query, callback, useCapture, 'addEventListener');
+        d.getAll(query).forEach(function (el) {
+            el.addEventListener(event, callback, useCapture || false);
+        });
     };
 
     /*
      * detach an event from the elements.
      */
     d.off = function (event, query, callback, useCapture) {
-        handleEvents(event, query, callback, useCapture, 'removeEventListener');
+        d.getAll(query).forEach(function (el) {
+            el.removeEventListener(event, callback, useCapture || false);
+        });
     };
 
     /*
@@ -183,7 +212,7 @@
             event = createEvent(event, data);
         }
 
-        selectAll(query).forEach(function (el) {
+        d.getAll(query).forEach(function (el) {
             el.dispatchEvent(event);
         });
     };
@@ -192,7 +221,7 @@
      * Remove elements
      */
     d.remove = function (query) {
-        selectAll(query).forEach(function (el) {
+        d.getAll(query).forEach(function (el) {
             el.parentNode.removeChild(el);
         });
     };
@@ -201,44 +230,52 @@
      * Insert a new element before other
      */
     d.insertBefore = function (query, content) {
-        var element = selectOne(query);
+        var element = d.get(query);
 
-        selectOrParse(content).forEach(function (el) {
-            element.parentNode.insertBefore(el, element);
-        });
+        if (element) {
+            selectOrParse(content).forEach(function (el) {
+                element.parentNode.insertBefore(el, element);
+            });
+        }
     };
 
     /*
      * Insert a new element after other
      */
     d.insertAfter = function (query, content) {
-        var element = selectOne(query);
+        var element = d.get(query);
 
-        selectOrParse(content).reverse().forEach(function (el) {
-            element.parentNode.insertBefore(el, element.nextSibling);
-        });
+        if (element) {
+            selectOrParse(content).reverse().forEach(function (el) {
+                element.parentNode.insertBefore(el, element.nextSibling);
+            });
+        }
     };
 
     /*
      * Insert a new element as the first child of other
      */
     d.prepend = function (query, content) {
-        var element = selectOne(query);
+        var element = d.get(query);
 
-        selectOrParse(content).reverse().forEach(function (el) {
-            element.insertBefore(el, element.firstChild);
-        });
+        if (element) {
+            selectOrParse(content).reverse().forEach(function (el) {
+                element.insertBefore(el, element.firstChild);
+            });
+        }
     };
 
     /*
      * Insert a new element as the last child of other
      */
     d.append = function (query, content) {
-        var element = selectOne(query);
+        var element = d.get(query);
 
-        selectOrParse(content).forEach(function (el) {
-            element.appendChild(el);
-        });
+        if (element) {
+            selectOrParse(content).forEach(function (el) {
+                element.appendChild(el);
+            });
+        }
     };
 
     /*
@@ -246,7 +283,7 @@
      */
     d.css = function (query, prop, value) {
         if (arguments.length < 3 && (typeof prop !== 'object')) {
-            var style = getComputedStyle(selectOne(query));
+            var style = getComputedStyle(d.get(query));
 
             if (arguments.length === 1) {
                 return style;
@@ -263,7 +300,7 @@
             rules[prop] = value;
         }
 
-        selectAll(query).forEach(function (element, index, elements) {
+        d.getAll(query).forEach(function (element, index, elements) {
             for (var prop in rules) {
                 var val = rules[prop];
 
@@ -281,18 +318,7 @@
     /*
      * Parses a html code
      */
-    d.parse = function (html) {
-        return parse(html, false);
-    };
-
-
-    /******************************
-     * Helpers functions
-     ******************************/
-
-     var support = {}, div = document.createElement('div');
-
-    function parse(html, forceArray) {
+    d.parse = function (html, forceArray) {
         div.innerHTML = html;
 
         if (div.children.length === 0) {
@@ -303,58 +329,20 @@
             return div.children[0];
         }
 
-        return selectAll(div.children);
-    }
+        return d.getAll(div.children);
+    };
 
-    function selectOrParse(query, context) {
+
+    /******************************
+     * Helpers functions
+     ******************************/
+
+    function selectOrParse(query) {
         if (typeof query === 'string' && query[0] === '<') {
-            return parse(query, true) || [];
+            return d.parse(query, true) || [];
         }
 
-        return selectAll(query, context);
-    }
-
-    function selectAll(query, context) {
-        if (Array.isArray(query) || query instanceof d) {
-            return query;
-        }
-
-        if (typeof query === 'string') {
-            query = (context || document).querySelectorAll(query);
-        }
-
-        if (query instanceof NodeList || query instanceof HTMLCollection) {
-            return Array.prototype.slice.call(query);
-        }
-
-        return [query];
-    }
-
-    function selectOne(query, context) {
-        if (typeof query === 'string') {
-            return (context || document).querySelector(query);
-        }
-
-        if (Array.isArray(query) || query instanceof NodeList || query instanceof HTMLCollection || query instanceof d) {
-            return query[0];
-        }
-
-        return query;
-    }
-
-    function handleEvents (event, query, callback, useCapture, fnName) {
-        var elements = selectAll(query);
-        useCapture = useCapture || false;
-
-        if (event instanceof Event) {
-            event = event.type;
-        }
-
-        elements.forEach(function (element) {
-            element[fnName](event, callback, useCapture);
-        });
-
-        return elements;
+        return d.getAll(query);
     }
 
     function styleProp (prop) {
