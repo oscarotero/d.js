@@ -11,21 +11,15 @@
         root.d = factory();
     }
 }(this, function () {
-    var support = {}, div = document.createElement('div');
+    var div = document.createElement('div');
 
     function d (query) {
         //constructor
         if (this instanceof d) {
-            if (!Array.isArray(query)) {
-                this.push(query);
-            } else {
-                Array.prototype.splice.apply(this, [0, 0].concat(query));
-            }
-
-            return this;
+            Array.prototype.splice.apply(this, [0, 0].concat(query));
+        } else {
+            return new d(selectOrParse(query));
         }
-
-        return new d(selectOrParse(query));
     };
 
     d.prototype = Object.create(Array.prototype, {
@@ -35,7 +29,7 @@
                     var found = d.get(query, this[i]);
 
                     if (found) {
-                        return new d(found);
+                        return new d([found]);
                     }
                 }
             }
@@ -78,6 +72,7 @@
                 var args = Array.prototype.slice.call(arguments);
                 args.unshift(this);
 
+                //getter
                 if (args.length < 3 && (typeof prop !== 'object')) {
                     return d.css.apply(null, args);
                 }
@@ -300,16 +295,16 @@
             rules[prop] = value;
         }
 
-        d.getAll(query).forEach(function (element, index, elements) {
+        d.getAll(query).forEach(function (el, index, elements) {
             for (var prop in rules) {
                 var val = rules[prop];
 
                 if (typeof val === 'function') {
-                    element.style[styleProp(prop)] = val.call(this, element, index, elements);
+                    el.style[styleProp(prop)] = val.call(this, el, index, elements);
                 } else if (val instanceof Array) {
-                    element.style[styleProp(prop)] = val[index < val.length ? index : index % val.length];
+                    el.style[styleProp(prop)] = val[index < val.length ? index : index % val.length];
                 } else {
-                    element.style[styleProp(prop)] = val;
+                    el.style[styleProp(prop)] = val;
                 }
             }
         });
@@ -355,10 +350,6 @@
             return prop;
         }
 
-        if (prop in support) {
-            return support[prop];
-        }
-
         //prefixed property
         var vendorProp,
         capProp = prop.charAt(0).toUpperCase() + prop.slice(1),
@@ -368,7 +359,6 @@
             vendorProp = prefixes[i] + capProp;
             
             if (vendorProp in div.style) {
-                support[prop] = vendorProp;
                 return vendorProp;
             }
         }
@@ -379,7 +369,6 @@
         if (('on' + type) in div) {
             var event = document.createEvent('HTMLEvents');
             event.initEvent(type, true, false);
-
             return event;
         }
 
