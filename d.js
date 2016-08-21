@@ -301,8 +301,8 @@
 
                 if (typeof val === 'function') {
                     el.style[styleProp(prop)] = val.call(this, el, index, elements);
-                } else if (val instanceof Array) {
-                    el.style[styleProp(prop)] = val[index < val.length ? index : index % val.length];
+                } else if (Array.isArray(val)) {
+                    el.style[styleProp(prop)] = val[index % val.length];
                 } else {
                     el.style[styleProp(prop)] = val;
                 }
