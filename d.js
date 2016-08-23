@@ -184,18 +184,22 @@
     /*
      * Attach an event to the elements.
      */
-    d.on = function (event, query, callback, useCapture) {
+    d.on = function (events, query, callback, useCapture) {
         d.getAll(query).forEach(function (el) {
-            el.addEventListener(event, callback, useCapture || false);
+            events.split(' ').forEach(function (event) {
+                el.addEventListener(event, callback, useCapture || false);
+            });
         });
     };
 
     /*
      * detach an event from the elements.
      */
-    d.off = function (event, query, callback, useCapture) {
+    d.off = function (events, query, callback, useCapture) {
         d.getAll(query).forEach(function (el) {
-            el.removeEventListener(event, callback, useCapture || false);
+            events.split(' ').forEach(function (event) {
+                el.removeEventListener(event, callback, useCapture || false);
+            });
         });
     };
 
