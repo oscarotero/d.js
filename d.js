@@ -304,12 +304,12 @@
                 var val = rules[prop];
 
                 if (typeof val === 'function') {
-                    el.style[styleProp(prop)] = val.call(this, el, index, elements);
+                    val = val.call(this, el, index, elements);
                 } else if (Array.isArray(val)) {
-                    el.style[styleProp(prop)] = val[index % val.length];
-                } else {
-                    el.style[styleProp(prop)] = val;
+                    val = val[index % val.length];
                 }
+
+                el.style[styleProp(prop)] = val;
             }
         });
     };
