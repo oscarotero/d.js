@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 (function (root, factory) {
-    if(typeof define === "function" && define.amd) {
+    if (typeof define === 'function' && define.amd) {
         define([], function() {
             return factory();
         });
-    } else if(typeof module === "object" && module.exports) {
+    } else if (typeof module === 'object' && module.exports) {
         module.exports = factory();
     } else {
         root.d = factory();
@@ -20,7 +20,7 @@
         } else {
             return new d(selectOrParse(query));
         }
-    };
+    }
 
     d.prototype = Object.create(Array.prototype, {
         get: {
@@ -68,7 +68,7 @@
             }
         },
         css: {
-            value: function (prop, value) {
+            value: function (prop) {
                 var args = Array.prototype.slice.call(arguments);
                 args.unshift(this);
 
@@ -356,8 +356,8 @@
 
         //prefixed property
         var vendorProp,
-        capProp = prop.charAt(0).toUpperCase() + prop.slice(1),
-        prefixes = ['Moz', 'Webkit', 'O', 'ms'];
+            capProp = prop.charAt(0).toUpperCase() + prop.slice(1),
+            prefixes = ['Moz', 'Webkit', 'O', 'ms'];
 
         for (var i = 0; i < prefixes.length; i++) {
             vendorProp = prefixes[i] + capProp;
@@ -369,9 +369,11 @@
     }
 
     function createEvent (type, data) {
+        var event;
+
         //native event
         if (('on' + type) in div) {
-            var event = document.createEvent('HTMLEvents');
+            event = document.createEvent('HTMLEvents');
             event.initEvent(type, true, false);
             return event;
         }
@@ -381,7 +383,7 @@
             return new CustomEvent(type, {detail: data || {}});
         }
 
-        var event = document.createEvent('CustomEvent');
+        event = document.createEvent('CustomEvent');
         event.initCustomEvent(type, true, true, data || {});
         return event;
     }
