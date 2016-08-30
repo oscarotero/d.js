@@ -213,12 +213,12 @@ buttons.forEach(function (el) {
 });
 ```
 
-## Instance API
+## Chaining
 
-`d.js` allows to create `d` instances so you can apply some of these methods in a object oriented way. Example:
+`d.js` allows to create `d` instances so you can chain some of these methods. Example:
 
 ```js
-d('.button') //returns a d instance
+d('.button')
 	.css({
 		color: 'red',
 		fontFamily: 'Arial'
@@ -240,10 +240,10 @@ d('<button>Click me</button>')
 	.appendTo('.buttons');
 ```
 
+Chainable methods:
+
 Method | Description
 ------ | -----------
-`.get(query)` | Returns a new instance with one child. For example: `d('form').get('.submit')`
-`.getAll(query)` | Returns a new instance with all children. For example: `d('form').getAll('input')`
 `.on(event, callback, useCapture)` | Attach an event.
 `.off(event, callback, useCapture)` | Removes an event.
 `.trigger(event, data)` | Trigger an event
@@ -256,4 +256,3 @@ Method | Description
 `.insertAfterTo(query)` | Insert the element after other element
 `.prependTo(query)` | Insert the element as first child of other element
 `.appendTo(query)` | Insert the element as last child of other element
-`.toArray()` | Returns an array with all elements

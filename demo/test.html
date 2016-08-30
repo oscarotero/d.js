@@ -22,7 +22,6 @@
 			QUnit.test(".get", function (assert) {
 				assert.strictEqual(d.get('.list > li'), document.querySelector('.list > li'), "Passed!");
 				assert.strictEqual(d.get('ol.list > li'), null, "Passed!");
-				assert.strictEqual(d('.list').get('li')[0], document.querySelector('.list li'), "Passed!");
 			});
 
 			QUnit.test(".getAll", function (assert) {

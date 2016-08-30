@@ -22,120 +22,6 @@
         }
     }
 
-    d.prototype = Object.create(Array.prototype, {
-        get: {
-            value: function (query) {
-                for (var i = 0; i < this.length; i++) {
-                    var found = d.get(query, this[i]);
-
-                    if (found) {
-                        return new d([found]);
-                    }
-                }
-            }
-        },
-        getAll: {
-            value: function (query) {
-                var all = [];
-
-                this.forEach(function (el) {
-                    d.getAll(query, el).forEach(function (found) {
-                        if (all.indexOf(found) === -1) {
-                            all.push(found);
-                        }
-                    });
-                });
-
-                return new d(all);
-            }
-        },
-        on: {
-            value: function (event, callback, useCapture) {
-                d.on(event, this, callback, useCapture);
-                return this;
-            }
-        },
-        off: {
-            value: function (event, callback, useCapture) {
-                d.off(event, this, callback, useCapture);
-                return this;
-            }
-        },
-        trigger: {
-            value: function (event, data) {
-                d.trigger(event, this, data);
-                return this;
-            }
-        },
-        css: {
-            value: function (prop) {
-                var args = Array.prototype.slice.call(arguments);
-                args.unshift(this);
-
-                //getter
-                if (args.length < 3 && (typeof prop !== 'object')) {
-                    return d.css.apply(null, args);
-                }
-
-                d.css.apply(null, args);
-                return this;
-            }
-        },
-        insertBefore: {
-            value: function (content) {
-                d.insertBefore(this, content);
-                return this;
-            }
-        },
-        insertAfter: {
-            value: function (content) {
-                d.insertAfter(this, content);
-                return this;
-            }
-        },
-        prepend: {
-            value: function (content) {
-                d.prepend(this, content);
-                return this;
-            }
-        },
-        append: {
-            value: function (content) {
-                d.append(this, content);
-                return this;
-            }
-        },
-        insertBeforeTo: {
-            value: function (query) {
-                d.insertBefore(query, this);
-                return this;
-            }
-        },
-        insertAfterTo: {
-            value: function (query) {
-                d.insertAfter(query, this);
-                return this;
-            }
-        },
-        prependTo: {
-            value: function (query) {
-                d.prepend(query, this);
-                return this;
-            }
-        },
-        appendTo: {
-            value: function (query) {
-                d.append(query, this);
-                return this;
-            }
-        },
-        toArray: {
-            value: function () {
-                return Array.prototype.slice.call(this);
-            }
-        }
-    });
-
     /*
      * Select the first element
      */
@@ -330,6 +216,93 @@
 
         return d.getAll(div.children);
     };
+
+
+    /******************************
+     * Wrapper for chaining
+     ******************************/
+    d.prototype = Object.create(Array.prototype, {
+        on: {
+            value: function (event, callback, useCapture) {
+                d.on(event, this, callback, useCapture);
+                return this;
+            }
+        },
+        off: {
+            value: function (event, callback, useCapture) {
+                d.off(event, this, callback, useCapture);
+                return this;
+            }
+        },
+        trigger: {
+            value: function (event, data) {
+                d.trigger(event, this, data);
+                return this;
+            }
+        },
+        css: {
+            value: function (prop) {
+                var args = Array.prototype.slice.call(arguments);
+                args.unshift(this);
+
+                //getter
+                if (args.length < 3 && (typeof prop !== 'object')) {
+                    return d.css.apply(null, args);
+                }
+
+                d.css.apply(null, args);
+                return this;
+            }
+        },
+        insertBefore: {
+            value: function (content) {
+                d.insertBefore(this, content);
+                return this;
+            }
+        },
+        insertAfter: {
+            value: function (content) {
+                d.insertAfter(this, content);
+                return this;
+            }
+        },
+        prepend: {
+            value: function (content) {
+                d.prepend(this, content);
+                return this;
+            }
+        },
+        append: {
+            value: function (content) {
+                d.append(this, content);
+                return this;
+            }
+        },
+        insertBeforeTo: {
+            value: function (query) {
+                d.insertBefore(query, this);
+                return this;
+            }
+        },
+        insertAfterTo: {
+            value: function (query) {
+                d.insertAfter(query, this);
+                return this;
+            }
+        },
+        prependTo: {
+            value: function (query) {
+                d.prepend(query, this);
+                return this;
+            }
+        },
+        appendTo: {
+            value: function (query) {
+                d.append(query, this);
+                return this;
+            }
+        }
+    });
 
 
     /******************************
