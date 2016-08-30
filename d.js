@@ -30,7 +30,7 @@
             return (context || document).querySelector(query);
         }
 
-        if (Array.isArray(query) || query instanceof NodeList || query instanceof HTMLCollection || query instanceof d) {
+        if (query instanceof NodeList || query instanceof HTMLCollection || query instanceof Array) {
             return query[0];
         }
 
@@ -170,11 +170,7 @@
         if (arguments.length < 3 && (typeof prop !== 'object')) {
             var style = getComputedStyle(d.get(query));
 
-            if (arguments.length === 1) {
-                return style;
-            }
-
-            return style[styleProp(prop)];
+            return (arguments.length === 1) ? style : style[styleProp(prop)];
         }
 
         var rules = {};
