@@ -79,6 +79,20 @@
     };
 
     /*
+     * Delegate an event to the elements.
+     */
+    d.delegate = function (events, query, selector, callback, useCapture) {
+        d.on(events, query, function (event) {
+            for (var target = event.target; target && target !== this; target = target.parentNode) {
+                if (d.is(target, selector)) {
+                    callback.call(target, event);
+                    break;
+                }
+            }
+        }, useCapture);
+    };
+
+    /*
      * detach an event from the elements.
      */
     d.off = function (events, query, callback, useCapture) {
@@ -221,6 +235,12 @@
         on: {
             value: function (event, callback, useCapture) {
                 d.on(event, this, callback, useCapture);
+                return this;
+            }
+        },
+        delegate: {
+            value: function (event, selector, callback, useCapture) {
+                d.delegate(event, this, selector, callback, useCapture);
                 return this;
             }
         },

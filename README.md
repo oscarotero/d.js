@@ -246,6 +246,7 @@ Method | Description
 ------ | -----------
 `.on(event, callback, useCapture)` | Attach an event.
 `.off(event, callback, useCapture)` | Removes an event.
+`.delegate(event, target, callback, useCapture)` | Delegates an event.
 `.trigger(event, data)` | Trigger an event
 `.css(props|prop, value)` | Get/set css properties
 `.insertBefore(content|query)` | Insert new elements before the element
