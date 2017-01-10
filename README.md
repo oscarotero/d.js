@@ -85,6 +85,24 @@ function clickAction(e) {
 d.on('click', '.button', clickAction);
 ```
 
+### d.delegate(event, query, target, callback, useCapture)
+
+Delegate an event to the elements
+
+* **event** A string with the event name or an instance of `Event`
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **target** A string with the target selector
+* **callback** The event callback
+* **useCapture** (optional)
+
+```js
+function clickAction(e) {
+	alert('Event ' + e.type);
+}
+
+d.on('click', '.navigation', 'a', clickAction);
+```
+
 ### d.off(event, query, callback, useCapture)
 
 Removes an event from the elements
@@ -119,7 +137,7 @@ Removes the elements from the DOM
 d.remove('.button');
 ```
 
-### insertAfter(query, content)
+### d.insertAfter(query, content)
 
 Insert new elements after other
 
@@ -131,7 +149,7 @@ d.insertAfter('li:last-child', newNodes);
 d.insertAfter('li:last-child', '<li>new content</li>');
 ```
 
-### insertBefore(query, content)
+### d.insertBefore(query, content)
 
 Insert new elements before other
 
@@ -143,7 +161,7 @@ d.insertBefore('li:first-child', newNodes);
 d.insertBefore('li:first-child', '<li>new content</li>');
 ```
 
-### prepend(query, content)
+### d.prepend(query, content)
 
 Insert new elements as first children of other element
 
@@ -155,7 +173,7 @@ d.prepend('ul', newLiNode);
 d.prepend('ul', '<li>new content</li>');
 ```
 
-### append(query, content)
+### d.append(query, content)
 
 Insert new elements as last children of other element
 
@@ -167,7 +185,7 @@ d.append('ul', newLiNode);
 d.append('ul', '<li>new content</li>');
 ```
 
-### css()
+### d.css()
 
 Set/get the css properties of the first element. The vendor prefixes are handled automatically.
 
@@ -193,7 +211,7 @@ d.css('.button', {
 });
 ```
 
-### parse()
+### d.parse()
 
 Parses html code. Returns an element or an array of elements
 
