@@ -3,5 +3,9 @@
     "eslint": "^3.4.0",
     "gulp": "^3.9.1",
     "gulp-uglify": "^2.0.0"
+  },
+  "scripts": {
+  	"build": "gulp",
+  	"lint": "eslint d.js"
   }
 }
