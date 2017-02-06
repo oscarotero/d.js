@@ -1,11 +1,23 @@
 {
+  "name": "d_js",
+  "version": "1.5.0",
+  "description": "DOM manipulation micro-library",
+  "main": "d.js",
+  "author": "Oscar Otero <oom@oscarotero.com>",
+  "homepage": "https://github.com/oscarotero/d.js",
+  "bugs": "https://github.com/oscarotero/d.js/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oscarotero/d.js.git"
+  },
+  "license": "MIT",
   "devDependencies": {
     "eslint": "^3.4.0",
     "gulp": "^3.9.1",
     "gulp-uglify": "^2.0.0"
   },
   "scripts": {
-  	"build": "gulp",
-  	"lint": "eslint d.js"
+    "build": "gulp",
+    "lint": "eslint d.js"
   }
 }
