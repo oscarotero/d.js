@@ -31,24 +31,24 @@ d.on('click', buttons, function () {
 
 ## API
 
-### d.get(query, context)
+### d.get(query)
 
 Returns the first element found:
 
-* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
-* **context** An optional context (by default is `document`)
+* **query** A string with the selector, array of elements, an object or a Node/NodeList/HTMLCollection instance
 
 ```js
 var container = d.get('.container');
-var buttonInContainer = d.get('.button', container);
+
+//Use an object to specify the context
+var buttonInContainer = d.get({'.button': container});
 ```
 
-### d.getAll(query, context)
+### d.getAll(query)
 
 Returns an array with all elements found:
 
-* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
-* **context** An optional context (by default is `document`)
+* **query** A string with the selector, array of elements, an object or a Node/NodeList/HTMLCollection instance
 
 ```js
 d.get('.button').forEach(function (el) {

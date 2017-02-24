@@ -25,13 +25,19 @@
     /*
      * Select the first element
      */
-    d.get = function (query, context) {
+    d.get = function (query) {
         if (typeof query === 'string') {
-            return (context || document).querySelector(query);
+            return document.querySelector(query);
         }
 
-        if (query instanceof NodeList || query instanceof HTMLCollection || query instanceof Array) {
+        if (query instanceof NodeList || query instanceof HTMLCollection || query instanceof Array || query instanceof d) {
             return query[0];
+        }
+
+        if (Object.prototype.toString.call(query) === '[object Object]') {
+            for (var q in query) {
+                return query[q].querySelector(q);
+            }
         }
 
         return query;
@@ -40,18 +46,24 @@
     /*
      * Select an array of elements
      */
-    d.getAll = function (query, context) {
+    d.getAll = function (query) {
         if (Array.isArray(query)) {
             return query;
         }
 
         if (typeof query === 'string') {
-            query = (context || document).querySelectorAll(query);
+            query = document.querySelectorAll(query);
+        } else if (Object.prototype.toString.call(query) === '[object Object]' && !(query instanceof d)) {
+            for (var q in query) {
+                query = query[q].querySelectorAll(q);
+                break;
+            }
         }
 
         if (query instanceof NodeList || query instanceof HTMLCollection || query instanceof d) {
             return Array.prototype.slice.call(query);
         }
+
 
         return [query];
     };

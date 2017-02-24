@@ -30,6 +30,14 @@
 				assert.strictEqual(d('.list > li').length, 3, "Passed!");
 			});
 
+			QUnit.test("types", function (assert) {
+				var elements = d.getAll('.list > li');
+				assert.strictEqual(d.get(elements), elements[0]);
+				assert.strictEqual(d.get('.list > li'), elements[0]);
+				assert.strictEqual(d.get(d('.list > li')), elements[0]);
+				assert.strictEqual(d.get(d('.list > li')), d('.list > li')[0]);
+			});
+
 			QUnit.test(".is", function (assert) {
 				var element = d.get('.list > li');
 
