@@ -56,6 +56,18 @@ d.get('.button').forEach(function (el) {
 });
 ```
 
+### d.getSiblings(element, query)
+
+Returns an array with all siblings of another.
+
+* **element** A string with the selector, array of elements, an object or a Node/NodeList/HTMLCollection instance
+* **query** Optional string to filter the siblings
+
+```js
+d.getSiblings('li'); //return all siblings
+d.getSiblings('li', '.filtered'); //return all siblings with class '.filtered'
+```
+
 ### d.is(element, query)
 
 Returns if the element matches with the selector:

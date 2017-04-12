@@ -30,6 +30,14 @@
 				assert.strictEqual(d('.list > li').length, 3, "Passed!");
 			});
 
+			QUnit.test(".getSiblings", function (assert) {
+				var element = d.get('.list > li');
+				assert.strictEqual(d.getSiblings(element).length, 2, "Passed!");
+				assert.strictEqual(d.getSiblings(element, 'li').length, 2, "Passed!");
+				assert.strictEqual(d.getSiblings(element, 'strong').length, 0, "Passed!");
+				assert.strictEqual(d.getSiblings('not-found', 'strong').length, 0, "Passed!");
+			});
+
 			QUnit.test("types", function (assert) {
 				var elements = d.getAll('.list > li');
 				assert.strictEqual(d.get(elements), elements[0]);

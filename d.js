@@ -68,6 +68,21 @@
         return [query];
     };
 
+    /**
+     * Select the siblings of an element
+     */
+    d.getSiblings = function (element, query) {
+        element = d.get(element);
+
+        if (!element) {
+            return [];
+        }
+
+        return d.getAll(element.parentNode.children).filter(function (child) {
+            return child !== element && (!query || d.is(child, query));
+        });
+    };
+
     /*
      * Check whether the element matches with a selector
      */
