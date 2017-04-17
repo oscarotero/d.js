@@ -149,6 +149,29 @@ Removes the elements from the DOM
 d.remove('.button');
 ```
 
+### d.setData(query, name, value)
+
+Set a `data-*` attribute. If it's an array or object, is converted to json
+
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **name** The name of the data attribute
+* **value** The value of the data attribute
+
+```js
+d.setData('.button', 'clicked', true);
+```
+
+### d.getData(query, name)
+
+Get a `data-*` attribute. It can detect and convert primitive types like integers, floats and booleans. Json values are automatically parsed.
+
+* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **name** The name of the data attribute
+
+```js
+d.setData('.button', 'clicked'); //true
+```
+
 ### d.insertAfter(query, content)
 
 Insert new elements after other

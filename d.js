@@ -153,6 +153,65 @@
     };
 
     /*
+     * Set a data-* attribute
+     */
+    d.setData = function (query, name, value) {
+        var element = d.get(query);
+
+        if (element) {
+            if (typeof value === 'object') {
+                value = JSON.stringify(value);
+            }
+
+            element.dataset[name] = value;
+        }
+    };
+
+    /*
+     * Get a data-* attribute
+     */
+    d.getData = function (query, name) {
+        var element = d.get(query);
+
+        if (!element || !element.dataset[name]) {
+            return;
+        }
+
+        var value = element.dataset[name];
+
+        switch (value.toLowerCase()) {
+            case 'true':
+                return true;
+
+            case 'false':
+                return false;
+
+            case 'undefined':
+                return undefined;
+
+            case 'null':
+                return null;
+        }
+
+        var s = value.substr(0, 1);
+        var e = value.substr(-1);
+
+        if ((s === '[' && e === ']') || (s === '{' && e === '}')) {
+            return JSON.parse(value);
+        }
+
+        if (/^\d+$/.test(value)) {
+            return parseInt(value);
+        }
+
+        if (/^\d+\.\d+$/.test(value)) {
+            return parseFloat(value);
+        }
+
+        return value;
+    };
+
+    /*
      * Insert a new element before other
      */
     d.insertBefore = function (query, content) {

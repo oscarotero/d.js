@@ -46,6 +46,30 @@
 				assert.strictEqual(d.get(d('.list > li')), d('.list > li')[0]);
 			});
 
+			QUnit.test("data", function (assert) {
+				var element = d.get('.list > li');
+				d.setData(element, 'string', 'hello world');
+				d.setData(element, 'object', {hello: 'world'});
+				d.setData(element, 'array', ['hello', 'world']);
+				d.setData(element, 'integer', 123);
+				d.setData(element, 'float', 123.34);
+
+				assert.strictEqual(element.dataset.string, 'hello world');
+				assert.strictEqual(d.getData(element, 'string'), 'hello world');
+
+				assert.strictEqual(element.dataset.object, '{"hello":"world"}');
+				assert.deepEqual(d.getData(element, 'object'), {hello: 'world'});
+				
+				assert.strictEqual(element.dataset.array, '["hello","world"]');
+				assert.deepEqual(d.getData(element, 'array'), ['hello', 'world']);
+				
+				assert.strictEqual(element.dataset.integer, '123');
+				assert.strictEqual(d.getData(element, 'integer'), 123);
+
+				assert.strictEqual(element.dataset.float, '123.34');
+				assert.strictEqual(d.getData(element, 'float'), 123.34);
+			});
+
 			QUnit.test(".is", function (assert) {
 				var element = d.get('.list > li');
 
