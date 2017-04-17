@@ -180,17 +180,17 @@
         var value = element.dataset[name];
 
         switch (value.toLowerCase()) {
-            case 'true':
-                return true;
+        case 'true':
+            return true;
 
-            case 'false':
-                return false;
+        case 'false':
+            return false;
 
-            case 'undefined':
-                return undefined;
+        case 'undefined':
+            return undefined;
 
-            case 'null':
-                return null;
+        case 'null':
+            return null;
         }
 
         var s = value.substr(0, 1);
