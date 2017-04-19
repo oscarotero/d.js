@@ -319,12 +319,12 @@
             }
         },
         css: {
-            value: function (prop) {
+            value: function () {
                 return getSet(this, arguments, d.css);
             }
         },
         data: {
-            value: function (prop) {
+            value: function () {
                 return getSet(this, arguments, d.data);
             }
         },

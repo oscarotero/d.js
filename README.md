@@ -304,6 +304,7 @@ Method | Description
 `.delegate(event, target, callback, useCapture)` | Delegates an event.
 `.trigger(event, data)` | Trigger an event
 `.css(name, value)` | Get/set css properties
+`.data(name, value)` | Get/set data-* attributes
 `.insertBefore(content|query)` | Insert new elements before the element
 `.insertAfter(content|query)` | Insert new elements after the element
 `.prepend(content|query)` | Insert new elements as first children
