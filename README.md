@@ -305,10 +305,10 @@ Method | Description
 `.trigger(event, data)` | Trigger an event
 `.css(name, value)` | Get/set css properties
 `.data(name, value)` | Get/set data-* attributes
-`.insertBefore(content|query)` | Insert new elements before the element
-`.insertAfter(content|query)` | Insert new elements after the element
-`.prepend(content|query)` | Insert new elements as first children
-`.append(content|query)` | Insert new elements as last children
+`.insertBefore(content)` | Insert new elements before the element
+`.insertAfter(content)` | Insert new elements after the element
+`.prepend(content)` | Insert new elements as first children
+`.append(content)` | Insert new elements as last children
 `.insertBeforeTo(query)` | Insert the element before other element
 `.insertAfterTo(query)` | Insert the element after other element
 `.prependTo(query)` | Insert the element as first child of other element
