@@ -7,7 +7,7 @@ A lot of this code is taken from http://youmightnotneedjquery.com/
 * Compatible with modern browsers and IE >= 10
 * Installable with bower `bower install d.js`
 * Compatible with AMD, commonJS and global javascript
-* Only 4Kb (minified)
+* Only 5Kb (minified)
 * HTML & SVG support
 
 ## Usage example:
@@ -149,27 +149,29 @@ Removes the elements from the DOM
 d.remove('.button');
 ```
 
-### d.setData(query, name, value)
+### d.data()
 
-Set a `data-*` attribute. If it's an array or object, is converted to json
-
-* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
-* **name** The name of the data attribute
-* **value** The value of the data attribute
-
-```js
-d.setData('.button', 'clicked', true);
-```
-
-### d.getData(query, name)
-
-Get a `data-*` attribute. It can detect and convert primitive types like integers, floats and booleans. Json values are automatically parsed.
+Set/get `data-*` attributes. It can detect and convert primitive types like integers, floats and booleans. If it's an array or object, is converted to json.
 
 * **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
-* **name** The name of the data attribute
+* **name** A string with the name of the data attribute or an object with name/values
+* **value** The new value of the property
 
 ```js
-d.setData('.button', 'clicked'); //true
+//Get a data value
+var clicked = d.data('.button', 'clicked');
+
+//Set a new value
+d.data('.button', 'clicked', true);
+
+//Set several values
+d.data('.button', {
+	boolean: true,
+	array: ['blue', 'red', 'green'],
+	object: {one: '1', two: 2},
+	integer: 123,
+	float: 123.45,
+});
 ```
 
 ### d.insertAfter(query, content)
@@ -301,7 +303,7 @@ Method | Description
 `.off(event, callback, useCapture)` | Removes an event.
 `.delegate(event, target, callback, useCapture)` | Delegates an event.
 `.trigger(event, data)` | Trigger an event
-`.css(props|prop, value)` | Get/set css properties
+`.css(name, value)` | Get/set css properties
 `.insertBefore(content|query)` | Insert new elements before the element
 `.insertAfter(content|query)` | Insert new elements after the element
 `.prepend(content|query)` | Insert new elements as first children

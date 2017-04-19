@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.9.0 - 2017-04-19
+
+### Removed
+
+* Removed the functions `d.getData()` and `d.setData()`.
+
+### Added
+
+* New function `d.data()` to set/get data
+* Added `.data()` to the prototype
+
+### Fixed
+
+* Fixed `d.delegate()` with custom events
+
 ## 1.8.0 - 2017-04-17
 
 * New functions `d.getData()` and `d.setData()`.

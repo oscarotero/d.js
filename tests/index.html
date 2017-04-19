@@ -48,26 +48,33 @@
 
 			QUnit.test("data", function (assert) {
 				var element = d.get('.list > li');
-				d.setData(element, 'string', 'hello world');
-				d.setData(element, 'object', {hello: 'world'});
-				d.setData(element, 'array', ['hello', 'world']);
-				d.setData(element, 'integer', 123);
-				d.setData(element, 'float', 123.34);
+				var el = d('.list > li');
+
+				d.data(element, 'string', 'hello world');
+				d.data(element, 'object', {hello: 'world'});
+				d.data(element, 'array', ['hello', 'world']);
+				d.data(element, 'integer', 123);
+				el.data('float', 123.34);
 
 				assert.strictEqual(element.dataset.string, 'hello world');
-				assert.strictEqual(d.getData(element, 'string'), 'hello world');
+				assert.strictEqual(d.data(element, 'string'), 'hello world');
+				assert.strictEqual(el.data('string'), 'hello world');
 
 				assert.strictEqual(element.dataset.object, '{"hello":"world"}');
-				assert.deepEqual(d.getData(element, 'object'), {hello: 'world'});
+				assert.deepEqual(d.data(element, 'object'), {hello: 'world'});
+				assert.deepEqual(el.data('object'), {hello: 'world'});
 				
 				assert.strictEqual(element.dataset.array, '["hello","world"]');
-				assert.deepEqual(d.getData(element, 'array'), ['hello', 'world']);
+				assert.deepEqual(d.data(element, 'array'), ['hello', 'world']);
+				assert.deepEqual(el.data('array'), ['hello', 'world']);
 				
 				assert.strictEqual(element.dataset.integer, '123');
-				assert.strictEqual(d.getData(element, 'integer'), 123);
+				assert.strictEqual(d.data(element, 'integer'), 123);
+				assert.strictEqual(el.data('integer'), 123);
 
 				assert.strictEqual(element.dataset.float, '123.34');
-				assert.strictEqual(d.getData(element, 'float'), 123.34);
+				assert.strictEqual(d.data(element, 'float'), 123.34);
+				assert.strictEqual(el.data('float'), 123.34);
 			});
 
 			QUnit.test(".is", function (assert) {
@@ -93,6 +100,7 @@
 				d.css('.not-found', 'margin', 'auto');
 
 				var elements = d.getAll('.list > li');
+				var el = d('.list > li:first-child');
 
 				assert.strictEqual(d.css(elements[0], 'margin-left'), '0px', "Passed!");
 
@@ -106,12 +114,16 @@
 				});
 
 				assert.strictEqual(d.css(elements[0], 'margin-left'), '10px', "Passed!");
+				assert.strictEqual(el.css('margin-left'), '10px', "Passed!");
 				assert.strictEqual(d.css(elements[0], 'font-family'), 'Arial', "Passed!");
+				assert.strictEqual(el.css('font-family'), 'Arial', "Passed!");
 				assert.strictEqual(d.css(elements[1], 'font-family'), 'Arial', "Passed!");
 				assert.strictEqual(d.css(elements[0], 'color'), 'rgb(255, 0, 0)', "Passed!");
+				assert.strictEqual(el.css('color'), 'rgb(255, 0, 0)', "Passed!");
 				assert.strictEqual(d.css(elements[1], 'color'), 'rgb(0, 0, 255)', "Passed!");
 				assert.strictEqual(d.css(elements[2], 'color'), 'rgb(255, 0, 0)', "Passed!");
 				assert.strictEqual(d.css(elements[0], 'fontSize'), '10px', "Passed!");
+				assert.strictEqual(el.css('fontSize'), '10px', "Passed!");
 				assert.strictEqual(d.css(elements[1], 'fontSize'), '11px', "Passed!");
 				assert.strictEqual(d.css(elements[2], 'fontSize'), '12px', "Passed!");
 			});
@@ -128,6 +140,26 @@
 			});
 
 			QUnit.test("events", function (assert) {
+				var eventName;
+
+				d.delegate('click blur custom_event', '.list', 'li', function (e) {
+					eventName = e.type;
+				});
+
+				d.trigger('click', '.list > li:first-child');
+				assert.strictEqual('click', eventName);
+
+				d.trigger('blur', '.list > li:first-child');
+				assert.strictEqual('blur', eventName);
+
+				d.trigger('custom_event', '.list > li:first-child');
+				assert.strictEqual('custom_event', eventName);
+
+				d.trigger('mouseover', '.list > li:first-child');
+				assert.strictEqual('custom_event', eventName);
+			});
+
+			QUnit.test("delegate", function (assert) {
 				var element = d('<div></div>');
 				var clicked = false;
 				var fn = function () {

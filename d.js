@@ -108,7 +108,7 @@
     /*
      * Delegate an event to the elements.
      */
-    d.delegate = function (events, query, selector, callback, useCapture) {
+    d.delegate = function (events, query, selector, callback) {
         d.on(events, query, function (event) {
             for (var target = event.target; target && target !== this; target = target.parentNode) {
                 if (d.is(target, selector)) {
@@ -116,7 +116,7 @@
                     break;
                 }
             }
-        }, useCapture);
+        }, true);
     };
 
     /*
@@ -150,65 +150,6 @@
         d.getAll(query).forEach(function (el) {
             el.parentNode.removeChild(el);
         });
-    };
-
-    /*
-     * Set a data-* attribute
-     */
-    d.setData = function (query, name, value) {
-        var element = d.get(query);
-
-        if (element) {
-            if (typeof value === 'object') {
-                value = JSON.stringify(value);
-            }
-
-            element.dataset[name] = value;
-        }
-    };
-
-    /*
-     * Get a data-* attribute
-     */
-    d.getData = function (query, name) {
-        var element = d.get(query);
-
-        if (!element || !element.dataset[name]) {
-            return;
-        }
-
-        var value = element.dataset[name];
-
-        switch (value.toLowerCase()) {
-        case 'true':
-            return true;
-
-        case 'false':
-            return false;
-
-        case 'undefined':
-            return undefined;
-
-        case 'null':
-            return null;
-        }
-
-        var s = value.substr(0, 1);
-        var e = value.substr(-1);
-
-        if ((s === '[' && e === ']') || (s === '{' && e === '}')) {
-            return JSON.parse(value);
-        }
-
-        if (/^\d+$/.test(value)) {
-            return parseInt(value);
-        }
-
-        if (/^\d+\.\d+$/.test(value)) {
-            return parseFloat(value);
-        }
-
-        return value;
     };
 
     /*
@@ -297,6 +238,41 @@
     };
 
     /*
+     * Get/set data-* attributes
+     */
+    d.data = function (query, name, value) {
+        if (arguments.length < 3 && (typeof name !== 'object')) {
+            var element = d.get(query);
+
+            if (!element || !element.dataset[name]) {
+                return;
+            }
+
+            return dataValue(element.dataset[name]);
+        }
+
+        var values = {};
+
+        if (typeof name === 'object') {
+            values = name;
+        } else {
+            values[name] = value;
+        }
+
+        d.getAll(query).forEach(function (el) {
+            for (var name in values) {
+                var value = values[name];
+
+                if (typeof value === 'object') {
+                    value = JSON.stringify(value);
+                }
+
+                el.dataset[name] = value;
+            }
+        });
+    };
+
+    /*
      * Parses a html code
      */
     d.parse = function (html, forceArray) {
@@ -344,16 +320,12 @@
         },
         css: {
             value: function (prop) {
-                var args = Array.prototype.slice.call(arguments);
-                args.unshift(this);
-
-                //getter
-                if (args.length < 3 && (typeof prop !== 'object')) {
-                    return d.css.apply(null, args);
-                }
-
-                d.css.apply(null, args);
-                return this;
+                return getSet(this, arguments, d.css);
+            }
+        },
+        data: {
+            value: function (prop) {
+                return getSet(this, arguments, d.data);
             }
         },
         insertBefore: {
@@ -419,6 +391,19 @@
         return d.getAll(query);
     }
 
+    function getSet(el, args, fn) {
+        args = Array.prototype.slice.call(args);
+        args.unshift(el);
+
+        //getter
+        if (args.length < 3 && (typeof args[1] !== 'object')) {
+            return fn.apply(null, args);
+        }
+
+        fn.apply(null, args);
+        return el;
+    }
+
     function styleProp (prop) {
         //camelCase (ex: font-family => fontFamily)
         prop = prop.replace(/(-\w)/g, function (match) {
@@ -441,6 +426,39 @@
                 return vendorProp;
             }
         }
+    }
+
+    function dataValue(value) {
+        switch (value.toLowerCase()) {
+        case 'true':
+            return true;
+
+        case 'false':
+            return false;
+
+        case 'undefined':
+            return undefined;
+
+        case 'null':
+            return null;
+        }
+
+        var s = value.substr(0, 1);
+        var e = value.substr(-1);
+
+        if ((s === '[' && e === ']') || (s === '{' && e === '}')) {
+            return JSON.parse(value);
+        }
+
+        if (/^\d+$/.test(value)) {
+            return parseInt(value);
+        }
+
+        if (/^\d+\.\d+$/.test(value)) {
+            return parseFloat(value);
+        }
+
+        return value;
     }
 
     function createEvent (type, data) {
