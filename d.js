@@ -112,7 +112,7 @@
         d.on(events, query, function (event) {
             for (var target = event.target; target && target !== this; target = target.parentNode) {
                 if (d.is(target, selector)) {
-                    callback.call(target, event);
+                    callback.call(target, event, target);
                     break;
                 }
             }

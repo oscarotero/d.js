@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.10.0 - 2017-07-20
+
+### Added
+
+* The callback of `d.delegate()` includes a second argument with the target.
+
 ## 1.9.0 - 2017-04-19
 
 ### Removed

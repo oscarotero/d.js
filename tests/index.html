@@ -142,8 +142,9 @@
 			QUnit.test("events", function (assert) {
 				var eventName;
 
-				d.delegate('click blur custom_event', '.list', 'li', function (e) {
+				d.delegate('click blur custom_event', '.list', 'li', function (e, target) {
 					eventName = e.type;
+					assert.strictEqual(this, target);
 				});
 
 				d.trigger('click', '.list > li:first-child');
@@ -159,7 +160,7 @@
 				assert.strictEqual('custom_event', eventName);
 			});
 
-			QUnit.test("delegate", function (assert) {
+			QUnit.test("trigger", function (assert) {
 				var element = d('<div></div>');
 				var clicked = false;
 				var fn = function () {
