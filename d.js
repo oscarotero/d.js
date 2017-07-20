@@ -88,7 +88,7 @@
      */
     d.is = function (element, query) {
         if (typeof query === 'string') {
-            return (element.matches || element.matchesSelector || element.msMatchesSelector || element.mozMatchesSelector || element.webkitMatchesSelector || element.oMatchesSelector).call(element, query);
+            return (element.matches || element.matchesSelector || element.msMatchesSelector || element.mozMatchesSelector || element.webkitMatchesSelector).call(element, query);
         }
 
         return element === query;

@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * The callback of `d.delegate()` includes a second argument with the target.
 
+### Removed
+
+* Removed code for Opera 11.5 compatibility.
+
 ## 1.9.0 - 2017-04-19
 
 ### Removed
