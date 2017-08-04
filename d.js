@@ -237,9 +237,6 @@
     if (!('closest' in Element.prototype)) {
         Element.prototype.closest = function(query) {
             var ancestor = this;
-            if (!ancestor.documentOwner.contains(query)) {
-                return null;
-            }
 
             do {
                 if (ancestor.matches(query)) {
