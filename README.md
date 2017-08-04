@@ -11,7 +11,7 @@ Micro dom manipulation library. Because jQuery is not needed always.
 ## Usage example:
 
 ```js
-//Get an array with all .buttons elements
+//Get all .buttons elements
 var buttons = d.getAll('.buttons');
 
 //Change css properties
@@ -33,7 +33,7 @@ d.on('click', buttons, function () {
 
 Returns the first element found:
 
-* **query** A string with the selector, array of elements, an object or a Node/NodeList/HTMLCollection instance
+* **query** A string with the selector, an object `{"selector": elementContext}` or a Node/NodeList
 
 ```js
 var container = d.get('.container');
@@ -44,7 +44,7 @@ var buttonInContainer = d.get({'.button': container});
 
 ### d.getAll(query)
 
-Returns `nodeList` with all elements found:
+Returns `NodeList` with all elements found:
 
 * **query** A string with the selector or an object `{"selector": elementContext}`
 
@@ -56,7 +56,7 @@ d.get('.button').forEach(function (el) {
 
 ### d.getSiblings(element, query)
 
-Returns an `array` with all siblings of another.
+Returns an `Array` with all siblings of another.
 
 * **element** A string with the selector, an object `{"selector": elementContext}` or a Node/NodeList
 * **query** Optional string to filter the siblings
@@ -178,7 +178,7 @@ d.css('.button', {
 
 ### d.parse()
 
-Parses html and returns `documentFragment`
+Parses html and returns a `DocumentFragment`
 
 * **html** A string with the code to parse
 
