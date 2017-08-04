@@ -22,9 +22,7 @@ d.css(buttons, {
 });
 
 //Handle events
-d.on('click', buttons, function () {
-	alert('clicked');
-});
+d.on('click', buttons, () => alert('clicked'));
 ```
 
 ## API
@@ -49,9 +47,7 @@ Returns `NodeList` with all elements found:
 * **query** A string with the selector or an object `{"selector": elementContext}`
 
 ```js
-d.get('.button').forEach(function (el) {
-	el.classList.add('selected');
-});
+d.getAll('.button').forEach(el => el.classList.add('selected'));
 ```
 
 ### d.getSiblings(element, query)
