@@ -27,7 +27,6 @@
 			QUnit.test(".getAll", function (assert) {
 				assert.strictEqual(d.getAll('.list > li').length, 3, "Passed!");
 				assert.strictEqual(d.getAll('ol.list > li').length, 0, "Passed!");
-				assert.strictEqual(d('.list > li').length, 3, "Passed!");
 			});
 
 			QUnit.test(".getSiblings", function (assert) {
@@ -42,55 +41,44 @@
 				var elements = d.getAll('.list > li');
 				assert.strictEqual(d.get(elements), elements[0]);
 				assert.strictEqual(d.get('.list > li'), elements[0]);
-				assert.strictEqual(d.get(d('.list > li')), elements[0]);
-				assert.strictEqual(d.get(d('.list > li')), d('.list > li')[0]);
 			});
 
 			QUnit.test("data", function (assert) {
 				var element = d.get('.list > li');
-				var el = d('.list > li');
 
 				d.data(element, 'string', 'hello world');
 				d.data(element, 'object', {hello: 'world'});
 				d.data(element, 'array', ['hello', 'world']);
 				d.data(element, 'integer', 123);
-				el.data('float', 123.34);
+				d.data(element, 'float', '123.34');
 
 				assert.strictEqual(element.dataset.string, 'hello world');
 				assert.strictEqual(d.data(element, 'string'), 'hello world');
-				assert.strictEqual(el.data('string'), 'hello world');
 
 				assert.strictEqual(element.dataset.object, '{"hello":"world"}');
 				assert.deepEqual(d.data(element, 'object'), {hello: 'world'});
-				assert.deepEqual(el.data('object'), {hello: 'world'});
 				
 				assert.strictEqual(element.dataset.array, '["hello","world"]');
 				assert.deepEqual(d.data(element, 'array'), ['hello', 'world']);
-				assert.deepEqual(el.data('array'), ['hello', 'world']);
 				
 				assert.strictEqual(element.dataset.integer, '123');
 				assert.strictEqual(d.data(element, 'integer'), 123);
-				assert.strictEqual(el.data('integer'), 123);
 
 				assert.strictEqual(element.dataset.float, '123.34');
 				assert.strictEqual(d.data(element, 'float'), 123.34);
-				assert.strictEqual(el.data('float'), 123.34);
 			});
 
-			QUnit.test(".is", function (assert) {
+			QUnit.test(".matches polyfill", function (assert) {
 				var element = d.get('.list > li');
 
-				assert.strictEqual(d.is(element, 'li'), true, "Passed!");
-				assert.strictEqual(d.is(element, 'p'), false, "Passed!");
+				assert.strictEqual(element.matches('li'), true, "Passed!");
+				assert.strictEqual(element.matches('p'), false, "Passed!");
 			});
 
-			QUnit.test(".remove", function (assert) {
-				//empty result
-				d.remove('.not-found');
-				
+			QUnit.test(".remove polyfill", function (assert) {
 				assert.strictEqual(d.getAll('.list > li').length, 3, "Passed!");
 
-				d.remove(d.get('.list > li'));
+				d.get('.list > li').remove();
 
 				assert.strictEqual(d.getAll('.list > li').length, 2, "Passed!");
 			});
@@ -100,7 +88,6 @@
 				d.css('.not-found', 'margin', 'auto');
 
 				var elements = d.getAll('.list > li');
-				var el = d('.list > li:first-child');
 
 				assert.strictEqual(d.css(elements[0], 'margin-left'), '0px', "Passed!");
 
@@ -114,16 +101,12 @@
 				});
 
 				assert.strictEqual(d.css(elements[0], 'margin-left'), '10px', "Passed!");
-				assert.strictEqual(el.css('margin-left'), '10px', "Passed!");
 				assert.strictEqual(d.css(elements[0], 'font-family'), 'Arial', "Passed!");
-				assert.strictEqual(el.css('font-family'), 'Arial', "Passed!");
 				assert.strictEqual(d.css(elements[1], 'font-family'), 'Arial', "Passed!");
 				assert.strictEqual(d.css(elements[0], 'color'), 'rgb(255, 0, 0)', "Passed!");
-				assert.strictEqual(el.css('color'), 'rgb(255, 0, 0)', "Passed!");
 				assert.strictEqual(d.css(elements[1], 'color'), 'rgb(0, 0, 255)', "Passed!");
 				assert.strictEqual(d.css(elements[2], 'color'), 'rgb(255, 0, 0)', "Passed!");
 				assert.strictEqual(d.css(elements[0], 'fontSize'), '10px', "Passed!");
-				assert.strictEqual(el.css('fontSize'), '10px', "Passed!");
 				assert.strictEqual(d.css(elements[1], 'fontSize'), '11px', "Passed!");
 				assert.strictEqual(d.css(elements[2], 'fontSize'), '12px', "Passed!");
 			});
@@ -131,12 +114,8 @@
 			QUnit.test(".parse", function (assert) {
 				var element = d.parse('<ol><li></li></ol>');
 
-				assert.strictEqual(d.is(element, 'ol'), true, "Passed!");
-				assert.strictEqual(element.children.length, 1, "Passed!");
-
-				element = d('<ol><li></li></ol>');
-				assert.strictEqual(d.is(element[0], 'ol'), true, "Passed!");
-				assert.strictEqual(element[0].children.length, 1, "Passed!");
+				assert.strictEqual(element.firstChild.matches('ol'), true, "Passed!");
+				assert.strictEqual(element.childNodes.length, 1, "Passed!");
 			});
 
 			QUnit.test("events", function (assert) {
@@ -161,86 +140,77 @@
 			});
 
 			QUnit.test("trigger", function (assert) {
-				var element = d('<div></div>');
+				var element = d.parse('<div></div>').firstChild;
 				var clicked = false;
 				var fn = function () {
 					clicked = true;
 				};
 
 				d.on('click', '.not-found', fn);
+				d.on('click', element, fn);
 
-				element.on('click', fn);
-
-				element.trigger('click');
+				d.trigger('click', element);
 				assert.strictEqual(clicked, true, "Passed!");
 				clicked = false;
 
-				element.off('click', fn);
-				element.trigger('click');
+				d.off('click', element, fn);
+				d.trigger('click', element);
 				assert.strictEqual(clicked, false, "Passed!");
 
-				element.on('customClick', fn);
+				d.on('customClick', element, fn);
 
-				element.trigger('customClick');
+				d.trigger('customClick', element);
 				assert.strictEqual(clicked, true, "Passed!");
 				clicked = false;
 
-				element.off('customClick', fn);
-				element.trigger('customClick');
+				d.off('customClick', element, fn);
+				d.trigger('customClick', element);
 				assert.strictEqual(clicked, false, "Passed!");
 			});
 
-			QUnit.test(".append", function (assert) {
-				d.append('.not-found', '<p>zero</p>');
-
-				var element = d.parse('<div></div>');
+			QUnit.test(".append polyfill", function (assert) {
+				var element = d.parse('<div></div>').firstChild;
 
 				assert.strictEqual(0, element.children.length);
 
-				d.append(element, '<p>one</p>');
-				d.append(element, '<p>two</p>');
-				d.append(element, '<p>three</p>');
+				element.append(d.parse('<p>one</p>'));
+				element.append(d.parse('<p>two</p>'));
+				element.append(d.parse('<p>three</p>'));
 
 				assert.strictEqual(3, element.children.length);
 				assert.strictEqual('one', element.children[0].innerText);
 			});
 
-			QUnit.test(".prepend", function (assert) {
-				d.prepend('.not-found', '<p>zero</p>');
-
-				var element = d.parse('<div></div>');
+			QUnit.test(".prepend polyfill", function (assert) {
+				var element = d.parse('<div></div>').firstChild;
 
 				assert.strictEqual(0, element.children.length);
 
-				d.prepend(element, '<p>three</p>');
-				d.prepend(element, '<p>two</p>');
-				d.prepend(element, '<p>one</p>');
+				element.prepend(d.parse('<p>three</p>'));
+				element.prepend(d.parse('<p>two</p>'));
+				element.prepend(d.parse('<p>one</p>'));
 
 				assert.strictEqual(3, element.children.length);
 				assert.strictEqual('one', element.children[0].innerText);
 			});
 
-			QUnit.test(".insertBefore", function (assert) {
-				d.insertBefore('.not-found', '<p>zero</p>');
-
-				var element = d.parse('<div><p>two</p></div>');
+			QUnit.test(".before polyfill", function (assert) {
+				var element = d.parse('<div><p>two</p></div>').firstChild;
 
 				assert.strictEqual(1, element.children.length);
 
-				d.insertBefore(element.children[0], '<p>one</p>');
+				element.children[0].before(d.parse('<p>one</p>'));
 
 				assert.strictEqual(2, element.children.length);
 				assert.strictEqual('one', element.children[0].innerText);
 			});
 
-			QUnit.test(".insertAfter", function (assert) {
-				d.insertAfter('.not-found', '<p>zero</p>');
-
-				var element = d.parse('<div><p>two</p></div>');
+			QUnit.test(".after polyfill", function (assert) {
+				var element = d.parse('<div><p>two</p></div>').firstChild;
 
 				assert.strictEqual(1, element.children.length);
 
-				d.insertAfter(element.children[0], '<p>three</p>');
+				element.children[0].after(d.parse('<p>three</p>'));
 
 				assert.strictEqual(2, element.children.length);
 				assert.strictEqual('three', element.children[1].innerText);

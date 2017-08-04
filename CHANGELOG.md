@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.0 - 2017-08-04
+
+### Added
+
+* Added a polyfill to `Element.prototype.closest`
+* Added a polyfill to `Element.prototype.replaceWith`
+* Added a polyfill to `NodeList.prototype.forEach`
+
+### Removed
+
+* Drop support for IE10
+* Drop *dist* folder
+* Removed `d.is()` and implemented a polyfill for `Element.prototype.matches` instead.
+* Removed `d.remove()` and implemented a polyfill for `Element.prototype.remove` instead.
+* Removed `d.append()` and implemented a polyfill for `Element.prototype.append` instead.
+* Removed `d.prepend()` and implemented a polyfill for `Element.prototype.prepend` instead.
+* Removed `d.insertBefore()` and implemented a polyfill for `Element.prototype.before` instead.
+* Removed `d.insertAfter()` and implemented a polyfill for `Element.prototype.after` instead.
+* Removed the ability to create instances to chain functions
+
+### Changed
+
+* `d.getAll()` returns a NodeList, instead an array
+* `d.parse()` returns a documentFragment, instead an array
+
+### Fixed
+
+* Fixed custom events in IE
+
 ## 1.10.0 - 2017-07-20
 
 ### Added

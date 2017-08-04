@@ -1,6 +1,6 @@
 'use strict';
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([], function() {
             return factory();
@@ -10,403 +10,331 @@
     } else {
         root.d = factory();
     }
-}(this, function () {
+})(this, function() {
     var div = document.createElement('div');
+    var d = {
 
-    function d (query) {
-        //constructor
-        if (this instanceof d) {
-            Array.prototype.splice.apply(this, [0, 0].concat(query));
-        } else {
-            return new d(selectOrParse(query));
-        }
-    }
-
-    /*
-     * Select the first element
-     */
-    d.get = function (query) {
-        if (typeof query === 'string') {
-            return document.querySelector(query);
-        }
-
-        if (query instanceof NodeList || query instanceof HTMLCollection || query instanceof Array || query instanceof d) {
-            return query[0];
-        }
-
-        if (Object.prototype.toString.call(query) === '[object Object]') {
-            for (var q in query) {
-                return query[q].querySelector(q);
+        /*
+         * Select the first element
+         */
+        get: function(query) {
+            if (typeof query === 'string') {
+                return document.querySelector(query);
             }
-        }
 
-        return query;
-    };
+            if (
+                query instanceof NodeList ||
+                query instanceof HTMLCollection ||
+                query instanceof Array
+            ) {
+                return query[0];
+            }
 
-    /*
-     * Select an array of elements
-     */
-    d.getAll = function (query) {
-        if (Array.isArray(query)) {
+            if (Object.prototype.toString.call(query) === '[object Object]') {
+                for (var q in query) {
+                    return query[q].querySelector(q);
+                }
+            }
+
             return query;
-        }
+        },
 
-        if (typeof query === 'string') {
-            query = document.querySelectorAll(query);
-        } else if (Object.prototype.toString.call(query) === '[object Object]' && !(query instanceof d)) {
-            for (var q in query) {
-                query = query[q].querySelectorAll(q);
-                break;
+        /*
+         * Select all elements
+         */
+        getAll: function(query) {
+            if (query instanceof NodeList) {
+                return query;
             }
-        }
 
-        if (query instanceof NodeList || query instanceof HTMLCollection || query instanceof d) {
-            return Array.prototype.slice.call(query);
-        }
+            if (typeof query === 'string') {
+                return document.querySelectorAll(query);
+            }
 
-
-        return [query];
-    };
-
-    /**
-     * Select the siblings of an element
-     */
-    d.getSiblings = function (element, query) {
-        element = d.get(element);
-
-        if (!element) {
-            return [];
-        }
-
-        return d.getAll(element.parentNode.children).filter(function (child) {
-            return child !== element && (!query || d.is(child, query));
-        });
-    };
-
-    /*
-     * Check whether the element matches with a selector
-     */
-    d.is = function (element, query) {
-        if (typeof query === 'string') {
-            return (element.matches || element.matchesSelector || element.msMatchesSelector || element.mozMatchesSelector || element.webkitMatchesSelector).call(element, query);
-        }
-
-        return element === query;
-    };
-
-    /*
-     * Attach an event to the elements.
-     */
-    d.on = function (events, query, callback, useCapture) {
-        d.getAll(query).forEach(function (el) {
-            events.split(' ').forEach(function (event) {
-                el.addEventListener(event, callback, useCapture || false);
-            });
-        });
-    };
-
-    /*
-     * Delegate an event to the elements.
-     */
-    d.delegate = function (events, query, selector, callback) {
-        d.on(events, query, function (event) {
-            for (var target = event.target; target && target !== this; target = target.parentNode) {
-                if (d.is(target, selector)) {
-                    callback.call(target, event, target);
-                    break;
+            if (Object.prototype.toString.call(query) === '[object Object]') {
+                for (var q in query) {
+                    return query[q].querySelectorAll(q);
                 }
             }
-        }, true);
-    };
 
-    /*
-     * detach an event from the elements.
-     */
-    d.off = function (events, query, callback, useCapture) {
-        d.getAll(query).forEach(function (el) {
-            events.split(' ').forEach(function (event) {
-                el.removeEventListener(event, callback, useCapture || false);
+            throw new Error('Invalid argument to getAll');
+        },
+
+        /**
+         * Select the siblings of an element
+         */
+        getSiblings: function(element, query) {
+            element = d.get(element);
+
+            if (!element) {
+                return [];
+            }
+
+            return Array.prototype.filter.call(
+                element.parentNode.children,
+                function(child) {
+                    return (
+                        child !== element && (!query || child.matches(query))
+                    );
+                }
+            );
+        },
+
+        /*
+         * Attach an event to the elements.
+         */
+        on: function(events, query, callback, useCapture) {
+            forceArray(query).forEach(function(el) {
+                events.split(' ').forEach(function(event) {
+                    el.addEventListener(event, callback, useCapture || false);
+                });
             });
-        });
-    };
+        },
 
-    /*
-     * dispatch an event.
-     */
-    d.trigger = function (event, query, data) {
-        if (typeof event === 'string') {
-            event = createEvent(event, data);
-        }
+        /*
+         * Delegate an event to the elements.
+         */
+        delegate: function(events, query, selector, callback) {
+            d.on(
+                events,
+                query,
+                function(event) {
+                    for (
+                        var target = event.target;
+                        target && target !== this;
+                        target = target.parentNode
+                    ) {
+                        if (target.matches(selector)) {
+                            callback.call(target, event, target);
+                            break;
+                        }
+                    }
+                },
+                true
+            );
+        },
 
-        d.getAll(query).forEach(function (el) {
-            el.dispatchEvent(event);
-        });
-    };
-
-    /*
-     * Remove elements
-     */
-    d.remove = function (query) {
-        d.getAll(query).forEach(function (el) {
-            el.parentNode.removeChild(el);
-        });
-    };
-
-    /*
-     * Insert a new element before other
-     */
-    d.insertBefore = function (query, content) {
-        var element = d.get(query);
-
-        if (element) {
-            selectOrParse(content).forEach(function (el) {
-                element.parentNode.insertBefore(el, element);
+        /*
+         * Detach an event from the elements.
+         */
+        off: function(events, query, callback, useCapture) {
+            forceArray(query).forEach(function(el) {
+                events.split(' ').forEach(function(event) {
+                    el.removeEventListener(
+                        event,
+                        callback,
+                        useCapture || false
+                    );
+                });
             });
-        }
-    };
+        },
 
-    /*
-     * Insert a new element after other
-     */
-    d.insertAfter = function (query, content) {
-        var element = d.get(query);
+        /*
+         * Dispatch an event.
+         */
+        trigger: function(event, query, data) {
+            if (typeof event === 'string') {
+                event = createEvent(event, data);
+            }
 
-        if (element) {
-            selectOrParse(content).reverse().forEach(function (el) {
-                element.parentNode.insertBefore(el, element.nextSibling);
+            forceArray(query).forEach(function(el) {
+                el.dispatchEvent(event);
             });
-        }
-    };
+        },
 
-    /*
-     * Insert a new element as the first child of other
-     */
-    d.prepend = function (query, content) {
-        var element = d.get(query);
+        /*
+         * Get/set the styles of elements
+         */
+        css: function(query, prop, value) {
+            if (arguments.length < 3 && typeof prop !== 'object') {
+                var style = getComputedStyle(d.get(query));
 
-        if (element) {
-            selectOrParse(content).reverse().forEach(function (el) {
-                element.insertBefore(el, element.firstChild);
+                return arguments.length === 1 ? style : style[styleProp(prop)];
+            }
+
+            var rules = {};
+
+            if (typeof prop === 'object') {
+                rules = prop;
+            } else {
+                rules[prop] = value;
+            }
+
+            forceArray(query).forEach(function(el, index, elements) {
+                for (var prop in rules) {
+                    var val = rules[prop];
+
+                    if (typeof val === 'function') {
+                        val = val.call(this, el, index, elements);
+                    } else if (Array.isArray(val)) {
+                        val = val[index % val.length];
+                    }
+
+                    el.style[styleProp(prop)] = val;
+                }
             });
-        }
-    };
+        },
 
-    /*
-     * Insert a new element as the last child of other
-     */
-    d.append = function (query, content) {
-        var element = d.get(query);
+        /*
+         * Get/set data-* attributes
+         */
+        data: function(query, name, value) {
+            if (arguments.length < 3 && typeof name !== 'object') {
+                var element = d.get(query);
 
-        if (element) {
-            selectOrParse(content).forEach(function (el) {
-                element.appendChild(el);
-            });
-        }
-    };
-
-    /*
-     * Get/set the styles of elements
-     */
-    d.css = function (query, prop, value) {
-        if (arguments.length < 3 && (typeof prop !== 'object')) {
-            var style = getComputedStyle(d.get(query));
-
-            return (arguments.length === 1) ? style : style[styleProp(prop)];
-        }
-
-        var rules = {};
-
-        if (typeof prop === 'object') {
-            rules = prop;
-        } else {
-            rules[prop] = value;
-        }
-
-        d.getAll(query).forEach(function (el, index, elements) {
-            for (var prop in rules) {
-                var val = rules[prop];
-
-                if (typeof val === 'function') {
-                    val = val.call(this, el, index, elements);
-                } else if (Array.isArray(val)) {
-                    val = val[index % val.length];
+                if (!element || !element.dataset[name]) {
+                    return;
                 }
 
-                el.style[styleProp(prop)] = val;
-            }
-        });
-    };
-
-    /*
-     * Get/set data-* attributes
-     */
-    d.data = function (query, name, value) {
-        if (arguments.length < 3 && (typeof name !== 'object')) {
-            var element = d.get(query);
-
-            if (!element || !element.dataset[name]) {
-                return;
+                return dataValue(element.dataset[name]);
             }
 
-            return dataValue(element.dataset[name]);
-        }
+            var values = {};
 
-        var values = {};
+            if (typeof name === 'object') {
+                values = name;
+            } else {
+                values[name] = value;
+            }
 
-        if (typeof name === 'object') {
-            values = name;
-        } else {
-            values[name] = value;
-        }
+            forceArray(query).forEach(function(el) {
+                for (var name in values) {
+                    var value = values[name];
 
-        d.getAll(query).forEach(function (el) {
-            for (var name in values) {
-                var value = values[name];
+                    if (typeof value === 'object') {
+                        value = JSON.stringify(value);
+                    }
 
-                if (typeof value === 'object') {
-                    value = JSON.stringify(value);
+                    el.dataset[name] = value;
                 }
+            });
+        },
 
-                el.dataset[name] = value;
-            }
-        });
-    };
-
-    /*
-     * Parses a html code
-     */
-    d.parse = function (html, forceArray) {
-        div.innerHTML = html;
-
-        if (div.children.length === 0) {
-            return forceArray ? [] : null;
+        /*
+         * Parses a html code
+         */
+        parse: function(html, includeTextNodes) {
+            var tmp = document.implementation.createHTMLDocument('');
+            tmp.body.innerHTML = html;
+            return toFragment(
+                includeTextNodes ? tmp.body.childNodes : tmp.body.children
+            );
         }
-
-        if (div.children.length === 1 && !forceArray) {
-            return div.children[0];
-        }
-
-        return d.getAll(div.children);
     };
-
 
     /******************************
-     * Wrapper for chaining
+     * Polyfills
      ******************************/
-    d.prototype = Object.create(Array.prototype, {
-        on: {
-            value: function (event, callback, useCapture) {
-                d.on(event, this, callback, useCapture);
-                return this;
-            }
-        },
-        delegate: {
-            value: function (event, selector, callback, useCapture) {
-                d.delegate(event, this, selector, callback, useCapture);
-                return this;
-            }
-        },
-        off: {
-            value: function (event, callback, useCapture) {
-                d.off(event, this, callback, useCapture);
-                return this;
-            }
-        },
-        trigger: {
-            value: function (event, data) {
-                d.trigger(event, this, data);
-                return this;
-            }
-        },
-        css: {
-            value: function () {
-                return getSet(this, arguments, d.css);
-            }
-        },
-        data: {
-            value: function () {
-                return getSet(this, arguments, d.data);
-            }
-        },
-        insertBefore: {
-            value: function (content) {
-                d.insertBefore(this, content);
-                return this;
-            }
-        },
-        insertAfter: {
-            value: function (content) {
-                d.insertAfter(this, content);
-                return this;
-            }
-        },
-        prepend: {
-            value: function (content) {
-                d.prepend(this, content);
-                return this;
-            }
-        },
-        append: {
-            value: function (content) {
-                d.append(this, content);
-                return this;
-            }
-        },
-        insertBeforeTo: {
-            value: function (query) {
-                d.insertBefore(query, this);
-                return this;
-            }
-        },
-        insertAfterTo: {
-            value: function (query) {
-                d.insertAfter(query, this);
-                return this;
-            }
-        },
-        prependTo: {
-            value: function (query) {
-                d.prepend(query, this);
-                return this;
-            }
-        },
-        appendTo: {
-            value: function (query) {
-                d.append(query, this);
-                return this;
-            }
-        }
-    });
 
+    // http://caniuse.com/#search=matches
+    if (!('matches' in Element.prototype)) {
+        Element.prototype.matches =
+            Element.prototype.msMatchesSelector ||
+            Element.prototype.webkitMatchesSelector;
+    }
+
+    // http://caniuse.com/#feat=element-closest
+    if (!('closest' in Element.prototype)) {
+        Element.prototype.closest = function(query) {
+            var ancestor = this;
+            if (!ancestor.documentOwner.contains(query)) {
+                return null;
+            }
+
+            do {
+                if (ancestor.matches(query)) {
+                    return ancestor;
+                }
+
+                ancestor = ancestor.parentElement;
+            } while (ancestor !== null);
+
+            return ancestor;
+        };
+    }
+
+    // http://caniuse.com/#feat=childnode-remove
+    if (!('remove' in Element.prototype)) {
+        Element.prototype.remove = function() {
+            if (this.parentNode) {
+                this.parentNode.removeChild(this);
+            }
+        };
+    }
+
+    // http://caniuse.com/#feat=dom-manip-convenience
+    if (!('append' in Element.prototype)) {
+        Element.prototype.append = function() {
+            this.appendChild(toFragment(arguments));
+        };
+    }
+
+    if (!('prepend' in Element.prototype)) {
+        Element.prototype.prepend = function() {
+            this.insertBefore(toFragment(arguments), this.firstChild);
+        };
+    }
+
+    if (!('before' in Element.prototype)) {
+        Element.prototype.before = function() {
+            this.parentNode.insertBefore(toFragment(arguments), this);
+        };
+    }
+
+    if (!('after' in Element.prototype)) {
+        Element.prototype.after = function() {
+            this.parentNode.insertBefore(
+                toFragment(arguments),
+                this.nextSibling
+            );
+        };
+    }
+
+    if (!('replaceWith' in Element.prototype)) {
+        Element.prototype.replaceWith = function() {
+            this.parentNode.replaceChild(toFragment(arguments), this);
+        };
+    }
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/NodeList/forEach
+    if (!('forEach' in NodeList.prototype)) {
+        NodeList.prototype.forEach = function(callback, thisArg) {
+            thisArg = thisArg || window;
+            for (var i = 0; i < this.length; i++) {
+                callback.call(thisArg, this[i], i, this);
+            }
+        };
+    }
 
     /******************************
      * Helpers functions
      ******************************/
 
-    function selectOrParse(query) {
-        if (typeof query === 'string' && query[0] === '<') {
-            return d.parse(query, true) || [];
+    function forceArray(query) {
+        if (query instanceof Node) {
+            return [query];
         }
 
         return d.getAll(query);
     }
 
-    function getSet(el, args, fn) {
-        args = Array.prototype.slice.call(args);
-        args.unshift(el);
+    function toFragment(args) {
+        var fragment = document.createDocumentFragment();
 
-        //getter
-        if (args.length < 3 && (typeof args[1] !== 'object')) {
-            return fn.apply(null, args);
-        }
+        Array.prototype.slice.call(args).forEach(function(item) {
+            fragment.appendChild(
+                item instanceof Node
+                    ? item
+                    : document.createTextNode(String(item))
+            );
+        });
 
-        fn.apply(null, args);
-        return el;
+        return fragment;
     }
 
-    function styleProp (prop) {
+    function styleProp(prop) {
         //camelCase (ex: font-family => fontFamily)
-        prop = prop.replace(/(-\w)/g, function (match) {
+        prop = prop.replace(/(-\w)/g, function(match) {
             return match[1].toUpperCase();
         });
 
@@ -421,7 +349,7 @@
 
         for (var i = 0; i < prefixes.length; i++) {
             vendorProp = prefixes[i] + capProp;
-            
+
             if (vendorProp in div.style) {
                 return vendorProp;
             }
@@ -430,17 +358,17 @@
 
     function dataValue(value) {
         switch (value.toLowerCase()) {
-        case 'true':
-            return true;
+            case 'true':
+                return true;
 
-        case 'false':
-            return false;
+            case 'false':
+                return false;
 
-        case 'undefined':
-            return undefined;
+            case 'undefined':
+                return undefined;
 
-        case 'null':
-            return null;
+            case 'null':
+                return null;
         }
 
         var s = value.substr(0, 1);
@@ -461,19 +389,19 @@
         return value;
     }
 
-    function createEvent (type, data) {
+    function createEvent(type, data) {
         var event;
 
         //native event
-        if (('on' + type) in div) {
+        if ('on' + type in div) {
             event = document.createEvent('HTMLEvents');
             event.initEvent(type, true, false);
             return event;
         }
 
         //custom event
-        if (window.CustomEvent) {
-            return new CustomEvent(type, {detail: data || {}});
+        if (typeof window.CustomEvent === 'function') {
+            return new CustomEvent(type, { detail: data || {} });
         }
 
         event = document.createEvent('CustomEvent');
@@ -482,4 +410,4 @@
     }
 
     return d;
-}));
+});

@@ -2,12 +2,10 @@
 
 Micro dom manipulation library. Because jQuery is not needed always.
 
-A lot of this code is taken from http://youmightnotneedjquery.com/
-
-* Compatible with modern browsers and IE >= 10
-* Installable with bower `bower install d.js`
+* Compatible with modern browsers and IE 11
+* Installable with NPM `npm install d_js` and bower `bower install d.js`
 * Compatible with AMD, commonJS and global javascript
-* Only 5Kb (minified)
+* Only 4Kb (minified)
 * HTML & SVG support
 
 ## Usage example:
@@ -46,9 +44,9 @@ var buttonInContainer = d.get({'.button': container});
 
 ### d.getAll(query)
 
-Returns an array with all elements found:
+Returns `nodeList` with all elements found:
 
-* **query** A string with the selector, array of elements, an object or a Node/NodeList/HTMLCollection instance
+* **query** A string with the selector or an object `{"selector": elementContext}`
 
 ```js
 d.get('.button').forEach(function (el) {
@@ -58,9 +56,9 @@ d.get('.button').forEach(function (el) {
 
 ### d.getSiblings(element, query)
 
-Returns an array with all siblings of another.
+Returns an `array` with all siblings of another.
 
-* **element** A string with the selector, array of elements, an object or a Node/NodeList/HTMLCollection instance
+* **element** A string with the selector, an object `{"selector": elementContext}` or a Node/NodeList
 * **query** Optional string to filter the siblings
 
 ```js
@@ -68,24 +66,12 @@ d.getSiblings('li'); //return all siblings
 d.getSiblings('li', '.filtered'); //return all siblings with class '.filtered'
 ```
 
-### d.is(element, query)
-
-Returns if the element matches with the selector:
-
-* **element** The element
-* **query** A string with the selector
-
-```js
-d.is(document.body, 'h1'); //false
-d.is(document.body, 'body'); //true
-```
-
 ### d.on(event, query, callback, useCapture)
 
 Attach an event to the elements
 
 * **event** A string with the event name or an instance of `Event`
-* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **query** A string with the selector, an object `{"selector": elementContext}` or a Node/NodeList
 * **callback** The event callback
 * **useCapture** (optional)
 
@@ -102,7 +88,7 @@ d.on('click', '.button', clickAction);
 Delegate an event to the elements
 
 * **event** A string with the event name or an instance of `Event`
-* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **query** A string with the selector, an object `{"selector": elementContext}` or a Node/NodeList
 * **target** A string with the target selector
 * **callback** The event callback
 * **useCapture** (optional)
@@ -120,7 +106,7 @@ d.on('click', '.navigation', 'a', clickAction);
 Removes an event from the elements
 
 * **event** A string with the event name or an instance of `Event`
-* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **query** A string with the selector, an object `{"selector": elementContext}` or a Node/NodeList
 * **callback** The event callback
 * **useCapture** (optional)
 
@@ -133,20 +119,10 @@ d.off('click', '.button', clickAction);
 Trigger an event of the elements
 
 * **event** A string with the event name or an instance of `Event`
-* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
+* **query** A string with the selector, an object `{"selector": elementContext}` or a Node/NodeList
 
 ```js
 d.trigger('click', '.button');
-```
-
-### d.remove(query)
-
-Removes the elements from the DOM
-
-* **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
-
-```js
-d.remove('.button');
 ```
 
 ### d.data()
@@ -172,54 +148,6 @@ d.data('.button', {
 	integer: 123,
 	float: 123.45,
 });
-```
-
-### d.insertAfter(query, content)
-
-Insert new elements after other
-
-* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
-* **content** A string with the selector or html content, array of elements or a Node/NodeList/HTMLCollection instance
-
-```js
-d.insertAfter('li:last-child', newNodes);
-d.insertAfter('li:last-child', '<li>new content</li>');
-```
-
-### d.insertBefore(query, content)
-
-Insert new elements before other
-
-* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
-* **content** A string with the selector or html content, array of elements or a Node/NodeList/HTMLCollection instance
-
-```js
-d.insertBefore('li:first-child', newNodes);
-d.insertBefore('li:first-child', '<li>new content</li>');
-```
-
-### d.prepend(query, content)
-
-Insert new elements as first children of other element
-
-* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
-* **content** A string with the selector or html content, array of elements or a Node/NodeList/HTMLCollection instance
-
-```js
-d.prepend('ul', newLiNode);
-d.prepend('ul', '<li>new content</li>');
-```
-
-### d.append(query, content)
-
-Insert new elements as last children of other element
-
-* **query** A string with the selector, array of elements or a NodeList/HTMLCollection instance
-* **content** A string with the selector or html content, array of elements or a Node/NodeList/HTMLCollection instance
-
-```js
-d.append('ul', newLiNode);
-d.append('ul', '<li>new content</li>');
 ```
 
 ### d.css()
@@ -250,66 +178,28 @@ d.css('.button', {
 
 ### d.parse()
 
-Parses html code. Returns an element or an array of elements
+Parses html and returns `documentFragment`
 
 * **html** A string with the code to parse
-* **forceArray** To return an array of elements even if just one element has been parsed
 
 ```js
 //parse one element
-var button = d.parse('<button>Hello</button>');
-button.classList.add('active');
+var button = d.parse('<button>Hello</button>').firstChild;
 
 //parse a list of elements
 var buttons = d.parse('<button>Hello</button><button>World</button>');
-
-buttons.forEach(function (el) {
-	el.classList.add('active');
-});
 ```
 
-## Chaining
+## Polyfills
 
-`d.js` allows to create `d` instances so you can chain some of these methods. Example:
+This library provides also some polyfills to add support for some DOM manipulation convenience methods missing in Explorer and Edge:
 
-```js
-d('.button')
-	.css({
-		color: 'red',
-		fontFamily: 'Arial'
-	}).
-	.on('click', function (e) {
-		alert('Button clicked');
-	})
-	.append('.buttons');
-
-//You can create new elements on the fly:
-d('<button>Click me</button>')
-	.css({
-		color: 'red',
-		fontFamily: 'Arial'
-	})
-	.on('click', function () {
-		alert('Hi!');
-	})
-	.appendTo('.buttons');
-```
-
-Chainable methods:
-
-Method | Description
------- | -----------
-`.on(event, callback, useCapture)` | Attach an event.
-`.off(event, callback, useCapture)` | Removes an event.
-`.delegate(event, target, callback, useCapture)` | Delegates an event.
-`.trigger(event, data)` | Trigger an event
-`.css(name, value)` | Get/set css properties
-`.data(name, value)` | Get/set data-* attributes
-`.insertBefore(content)` | Insert new elements before the element
-`.insertAfter(content)` | Insert new elements after the element
-`.prepend(content)` | Insert new elements as first children
-`.append(content)` | Insert new elements as last children
-`.insertBeforeTo(query)` | Insert the element before other element
-`.insertAfterTo(query)` | Insert the element after other element
-`.prependTo(query)` | Insert the element as first child of other element
-`.appendTo(query)` | Insert the element as last child of other element
+* `Element.prototype.matches`
+* `Element.prototype.closest`
+* `Element.prototype.remove`
+* `Element.prototype.append`
+* `Element.prototype.prepend`
+* `Element.prototype.before`
+* `Element.prototype.after`
+* `Element.prototype.replaceWith`
+* `NodeList.prototype.forEach`

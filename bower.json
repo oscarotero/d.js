@@ -10,6 +10,7 @@
   "keywords": [
     "dom",
     "events",
+    "polyfills",
     "css"
   ],
   "license": "MIT",

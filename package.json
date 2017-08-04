@@ -1,6 +1,6 @@
 {
   "name": "d_js",
-  "version": "1.10.0",
+  "version": "2.0.0",
   "description": "DOM manipulation micro-library",
   "main": "d.js",
   "author": "Oscar Otero <oom@oscarotero.com>",
@@ -12,12 +12,9 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^4.2.0",
-    "gulp": "^3.9.1",
-    "gulp-uglify": "^3.0.0"
+    "prettier": "^1.5.3"
   },
   "scripts": {
-    "build": "gulp",
-    "lint": "eslint d.js"
+    "prettier": "prettier d.js --single-quote --tab-width 4 --write"
   }
 }
