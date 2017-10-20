@@ -199,3 +199,4 @@ This library provides also some polyfills to add support for some DOM manipulati
 * `Element.prototype.after`
 * `Element.prototype.replaceWith`
 * `NodeList.prototype.forEach`
+* `:scope` selector
