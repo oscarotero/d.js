@@ -37,6 +37,13 @@
 				assert.strictEqual(d.getSiblings('not-found', 'strong').length, 0, "Passed!");
 			});
 
+			QUnit.test(":scope", function (assert) {
+				var element = d.get('.list');
+				assert.strictEqual(d.getAll(':scope > li:last-child', element).length, 1, "Passed!");
+				assert.strictEqual(element.querySelectorAll(':scope > li').length, 3, "Passed!");
+				assert.strictEqual(d.get(':scope > p, :scope>li', element), document.querySelector('.list > li'), "Passed!");
+			});
+
 			QUnit.test("types", function (assert) {
 				var elements = d.getAll('.list > li');
 				assert.strictEqual(d.get(elements), elements[0]);

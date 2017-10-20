@@ -13,11 +13,14 @@
 })(this, function() {
     var div = document.createElement('div');
     var d = {
-
         /*
          * Select the first element
          */
-        get: function(query) {
+        get: function(query, context) {
+            if (context) {
+                return context.querySelector(query);
+            }
+
             if (typeof query === 'string') {
                 return document.querySelector(query);
             }
@@ -42,7 +45,11 @@
         /*
          * Select all elements
          */
-        getAll: function(query) {
+        getAll: function(query, context) {
+            if (context) {
+                return context.querySelectorAll(query);
+            }
+
             if (query instanceof NodeList) {
                 return query;
             }
@@ -301,6 +308,57 @@
                 callback.call(thisArg, this[i], i, this);
             }
         };
+    }
+
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/:scope
+    // Polyfill https://github.com/lazd/scopedQuerySelectorShim
+    try {
+        div.querySelectorAll(':scope *');
+    } catch (e) {
+        // Match usage of scope
+        var scopeRegexp = /:scope/g;
+
+        // Overrides
+        ['querySelector', 'querySelectorAll'].forEach(function(methodName) {
+            var original = HTMLElement.prototype[methodName];
+
+            // Override the method
+            HTMLElement.prototype[methodName] = function(query) {
+                if (!query.match(scopeRegexp)) {
+                    return original.call(this, query);
+                }
+
+                var nodeList, removeId;
+
+                // Temporary container
+                if (!this.parentNode) {
+                    div.appendChild(this);
+                }
+
+                // Temporary id
+                if (!this.id) {
+                    this.id = Math.random()
+                        .toString()
+                        .replace('0.', 'id_' + Date.now());
+                    removeId = true;
+                }
+
+                nodeList = original.call(
+                    this.parentNode,
+                    query.replace(scopeRegexp, '#' + this.id)
+                );
+
+                if (removeId) {
+                    this.id = '';
+                }
+
+                if (this.parentNode === div) {
+                    div.removeChild(this);
+                }
+
+                return nodeList;
+            };
+        });
     }
 
     /******************************
