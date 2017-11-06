@@ -1,6 +1,6 @@
 {
   "name": "d_js",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "DOM manipulation micro-library",
   "main": "d.js",
   "author": "Oscar Otero <oom@oscarotero.com>",

@@ -186,8 +186,27 @@
          * Get/set data-* attributes
          */
         data: function(query, name, value) {
-            if (arguments.length < 3 && typeof name !== 'object') {
+            if (
+                arguments.length < 3 &&
+                (typeof name !== 'object' || Array.isArray(name))
+            ) {
                 var element = d.get(query);
+
+                if (!name) {
+                    name = Object.keys(element.dataset);
+                }
+
+                if (Array.isArray(name)) {
+                    var values = {};
+
+                    name.forEach(function(name) {
+                        if (element.dataset[name]) {
+                            values[name] = dataValue(element.dataset[name]);
+                        }
+                    });
+
+                    return values;
+                }
 
                 if (!element || !element.dataset[name]) {
                     return;

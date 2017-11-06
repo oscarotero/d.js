@@ -57,6 +57,7 @@
 				d.data(element, 'object', {hello: 'world'});
 				d.data(element, 'array', ['hello', 'world']);
 				d.data(element, 'integer', 123);
+				d.data(element, 'zero', 0);
 				d.data(element, 'float', '123.34');
 
 				assert.strictEqual(element.dataset.string, 'hello world');
@@ -73,6 +74,16 @@
 
 				assert.strictEqual(element.dataset.float, '123.34');
 				assert.strictEqual(d.data(element, 'float'), 123.34);
+
+				assert.deepEqual(d.data(element, ['string', 'integer', 'unexist', 'zero']), {string: 'hello world', integer: 123, zero: 0});
+				assert.deepEqual(d.data(element), {
+					string: 'hello world',
+					object: {hello: 'world'},
+					array: ['hello', 'world'],
+					integer: 123,
+					float: 123.34,
+					zero: 0
+				});
 			});
 
 			QUnit.test(".matches polyfill", function (assert) {
