@@ -126,7 +126,7 @@ d.trigger('click', '.button');
 Set/get `data-*` attributes. It can detect and convert primitive types like integers, floats and booleans. If it's an array or object, is converted to json.
 
 * **query** A string with the selector, array of elements or a Node/NodeList/HTMLCollection instance
-* **name** A string with the name of the data attribute or an object with name/values
+* **name** A string with the name of the data attribute, an array of names or an object with name/values
 * **value** The new value of the property
 
 ```js
@@ -144,6 +144,13 @@ d.data('.button', {
 	integer: 123,
 	float: 123.45,
 });
+
+
+//Get some values
+var someValues = d.data('.button', ['clicked', 'boolean', 'array']);
+
+//Get all values
+var allValues = d.data('.button');
 ```
 
 ### d.css()
