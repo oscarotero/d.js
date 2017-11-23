@@ -112,6 +112,7 @@
                         target = target.parentNode
                     ) {
                         if (target.matches(selector)) {
+                            event.currentTarget = target;
                             callback.call(target, event, target);
                             break;
                         }
